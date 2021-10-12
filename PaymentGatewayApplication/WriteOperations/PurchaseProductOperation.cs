@@ -59,12 +59,18 @@ namespace PaymentGatewayApplication.WriteOperations
                 throw new Exception("The person is not associated with the account!");
             }
 
-            var totalAmount = 0.0;
-            //Product product;
+            var totalAmount = 0d;
+            Product product;
+            // select sum(quantity) as TotalQUantity, productId from input group by productid => listOfTotals
+            // select sum(i.quantity*p.price) from input i inner join product p on productid..
+            //operation.ProductDetails.GroupBy() // Sum() // GroupByJoin
             foreach (var item in operation.ProductDetails)
             {
-                var product = database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
+                product = database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
+                // select * from Product where id = item.ProductId
+                // var totalPerProduct = listOfTotals.First(x-> x.productid == productid);
 
+                // if(totalPerProduct.TotalQUantity > product.Limit)
                 if (product.Limit < item.Quantity)
                 {
                     throw new Exception("Insufficient stocks!");
@@ -86,7 +92,7 @@ namespace PaymentGatewayApplication.WriteOperations
 
             foreach (var item in operation.ProductDetails)
             {
-                var product = database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
+                product = database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
                 ProductXTransaction productXTransaction = new ProductXTransaction();
                 productXTransaction.TransactionId = transaction.TransactionId;
                 productXTransaction.ProductId = item.ProductId;

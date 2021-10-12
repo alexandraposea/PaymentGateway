@@ -3,19 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31727.386
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGateway", "PaymentGateway\PaymentGateway.csproj", "{3B1B9224-73B9-4367-B583-1A9083175C34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentGateway", "PaymentGateway\PaymentGateway.csproj", "{3B1B9224-73B9-4367-B583-1A9083175C34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGatewayModels", "PaymentGatewayModels\PaymentGatewayModels.csproj", "{A6A79597-49EC-4AAD-975C-1271BA082106}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentGateway.Models", "PaymentGatewayModels\PaymentGateway.Models.csproj", "{A6A79597-49EC-4AAD-975C-1271BA082106}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGatewayApplication", "PaymentGatewayApplication\PaymentGatewayApplication.csproj", "{6199FA0A-66D0-4EC5-9E5F-8296A607CA4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentGateway.Application", "PaymentGatewayApplication\PaymentGateway.Application.csproj", "{6199FA0A-66D0-4EC5-9E5F-8296A607CA4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGatewayData", "PaymentGatewayData\PaymentGatewayData.csproj", "{656F9E08-913F-4B67-916B-210C2A8AD658}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentGateway.Data", "PaymentGatewayData\PaymentGateway.Data.csproj", "{656F9E08-913F-4B67-916B-210C2A8AD658}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGatewayPublishedLanguage", "PaymentGatewayPublishedLanguage\PaymentGatewayPublishedLanguage.csproj", "{507F0B4F-B90A-4835-8744-41B6EA21866A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentGateway.PublishedLanguage", "PaymentGatewayPublishedLanguage\PaymentGateway.PublishedLanguage.csproj", "{507F0B4F-B90A-4835-8744-41B6EA21866A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abstractions", "Abstractions\Abstractions.csproj", "{FDF61641-8457-4409-993E-9AFB99401B0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abstractions", "Abstractions\Abstractions.csproj", "{FDF61641-8457-4409-993E-9AFB99401B0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGatewayExternalService", "PaymentGatewayExternalService\PaymentGatewayExternalService.csproj", "{7E11D73A-D503-4258-9E32-6FE052781515}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentGateway.ExternalService", "PaymentGatewayExternalService\PaymentGateway.ExternalService.csproj", "{7E11D73A-D503-4258-9E32-6FE052781515}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{E08692D2-3014-4706-AD95-7452F9312DF3}"
+	ProjectSection(SolutionItems) = preProject
+		dependencies.props = dependencies.props
+		Directory.Build.props = Directory.Build.props
+		NuGet.config = NuGet.config
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGateway.WebApi", "PaymentGateway.WebApi\PaymentGateway.WebApi.csproj", "{80B7D6B3-1AF4-4576-B065-50AB4A7EBD92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +60,10 @@ Global
 		{7E11D73A-D503-4258-9E32-6FE052781515}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E11D73A-D503-4258-9E32-6FE052781515}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E11D73A-D503-4258-9E32-6FE052781515}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80B7D6B3-1AF4-4576-B065-50AB4A7EBD92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80B7D6B3-1AF4-4576-B065-50AB4A7EBD92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80B7D6B3-1AF4-4576-B065-50AB4A7EBD92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80B7D6B3-1AF4-4576-B065-50AB4A7EBD92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

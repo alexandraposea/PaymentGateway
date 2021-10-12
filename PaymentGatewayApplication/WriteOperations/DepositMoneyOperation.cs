@@ -66,6 +66,7 @@ namespace PaymentGatewayApplication.WriteOperations
             transaction.Amount = operation.Amount;
             transaction.Currency = operation.Currency;
             transaction.Date = operation.DateOfTransaction;
+
             account.Balance += operation.Amount;
 
             database.Transactions.Add(transaction);

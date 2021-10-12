@@ -1,4 +1,5 @@
 ﻿using Abstractions;
+using PaymentGateway.Application;
 using PaymentGatewayData;
 using PaymentGatewayModels;
 using PaymentGatewayPublishedLanguage.Events;
@@ -14,22 +15,26 @@ namespace PaymentGatewayApplication.WriteOperations
     public class CreateAccountOperation : IWriteOperation<CreateAccountCommand>
 
     {
-        public IEventSender eventSender;
+        private readonly IEventSender _eventSender;
+        private readonly AccountOptions _accountOptions;
 
-        public CreateAccountOperation(IEventSender eventSender)
+        public CreateAccountOperation(IEventSender eventSender, AccountOptions accountOptions)
         {
-            this.eventSender = eventSender;
+            _eventSender = eventSender;
+            _accountOptions = accountOptions;
         }
         public void PerformOperation(CreateAccountCommand operation)
         {
             Database database = Database.GetInstance();
-            Account account = new Account();
-            account.Balance = operation.Balance;
-            account.Currency = operation.Currency;
-            account.IbanCode = operation.IbanCode;
-            account.Type = operation.Type;
-            account.Status = operation.Status;
-            account.Limit = operation.Limit;
+            Account account = new Account
+            {
+                Balance = _accountOptions.InitialBalance,
+                Currency = operation.Currency,
+                IbanCode = operation.IbanCode,
+                Type = operation.Type,
+                Status = operation.Status,
+                Limit = operation.Limit
+            };
 
             Person person;
             if (operation.PersonId.HasValue)
@@ -49,10 +54,11 @@ namespace PaymentGatewayApplication.WriteOperations
 
             account.PersonId = person.PersonId;
             database.Accounts.Add(account);
+            AccountCreated eventAccountCreated = new(operation.IbanCode, operation.Type, operation.Status);
+            
+            _eventSender.SendEvent(eventAccountCreated);
             database.SaveChanges();
 
-            AccountCreated eventAccountCreated = new(operation.IbanCode, operation.Type, operation.Status);
-            eventSender.SendEvent(eventAccountCreated);
         }
     }
 }

@@ -14,6 +14,7 @@ namespace PaymentGatewayApplication.WriteOperations
     public class EnrollCustomerOperation : IWriteOperation<EnrollCustomerCommand>
     {
         public IEventSender eventSender;
+        private readonly Database _database;
         public EnrollCustomerOperation(IEventSender eventSender)
         {
             this.eventSender = eventSender;
@@ -21,7 +22,7 @@ namespace PaymentGatewayApplication.WriteOperations
         public void PerformOperation(EnrollCustomerCommand operation)
         {
             var random = new Random();
-            Database database = Database.GetInstance();
+            var database = Database.GetInstance();
 
             Person person = new Person();
             person.Cnp = operation.UniqueIdentifier;
@@ -50,7 +51,7 @@ namespace PaymentGatewayApplication.WriteOperations
 
             database.Accounts.Add(account);
 
-            
+
             CustomerEnrolled eventCustomerEnroll = new(operation.Name, operation.UniqueIdentifier, operation.ClientType);
             eventSender.SendEvent(eventCustomerEnroll);
             database.SaveChanges();
