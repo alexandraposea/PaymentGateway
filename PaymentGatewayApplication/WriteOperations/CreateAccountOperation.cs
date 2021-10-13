@@ -40,7 +40,6 @@ namespace PaymentGatewayApplication.WriteOperations
             if (operation.PersonId.HasValue)
             {
                 person = database.Persons.FirstOrDefault(x => x.PersonId == operation.PersonId);
-
             }
             else
             {

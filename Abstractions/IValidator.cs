@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Abstractions
 {
-    public interface IWriteOperation<TCommand>
+    public interface IValidator<TInput>
     {
-        public void PerformOperation(TCommand operation);
+        bool Validate(TInput input);
     }
 }

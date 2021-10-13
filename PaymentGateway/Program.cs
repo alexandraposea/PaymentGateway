@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Application;
+using PaymentGatewayApplication.ReadOperations;
 using PaymentGatewayApplication.WriteOperations;
 using PaymentGatewayData;
 using PaymentGatewayExternalService;
@@ -239,6 +240,14 @@ namespace PaymentGateway
 
             var purchaseProductOperation = serviceProvider.GetRequiredService<PurchaseProductOperation>();
             purchaseProductOperation.PerformOperation(purchaseProductCommand);
+
+            var query = new ListOfAccounts.Query
+            {
+                Cnp = "2970304234566"
+            };
+
+            var handler = serviceProvider.GetRequiredService<ListOfAccounts.QueryHandler>();
+            var result = handler.PerformOperation(query);
         }
     }
 }
