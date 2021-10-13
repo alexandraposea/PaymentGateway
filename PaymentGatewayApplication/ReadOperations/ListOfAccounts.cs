@@ -53,14 +53,14 @@ namespace PaymentGatewayApplication.ReadOperations
                     throw new Exception("Person not found!");
                 }
 
-                var person = query.PersonId.HasValue ?
-                    _database.Persons.FirstOrDefault(x => x.PersonId == query.PersonId) :
-                    _database.Persons.FirstOrDefault(x => x.Cnp == query.Cnp);
+                //var person = query.PersonId.HasValue ?
+                //    _database.Persons.FirstOrDefault(x => x.PersonId == query.PersonId) :
+                //    _database.Persons.FirstOrDefault(x => x.Cnp == query.Cnp);
 
-                if (person == null)
-                {
-                    throw new Exception("Person not found!");
-                }
+                //if (person == null)
+                //{
+                //    throw new Exception("Person not found!");
+                //}
 
                 var db = _database.Accounts.Where(x => x.PersonId == query.PersonId);
                 var result = db.Select(x => new Model
