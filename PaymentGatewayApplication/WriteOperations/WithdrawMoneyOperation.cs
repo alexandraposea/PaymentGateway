@@ -68,10 +68,12 @@ namespace PaymentGatewayApplication.WriteOperations
 
             account.AccountId = request.AccountId;
             person.PersonId = request.PersonId;
-            Transaction transaction = new Transaction();
-            transaction.Amount = -request.Amount;
-            transaction.Currency = request.Currency;
-            transaction.Date = request.DateOfTransaction;
+            var transaction = new Transaction
+            {
+                Amount = -request.Amount,
+                Currency = request.Currency,
+                Date = request.DateOfTransaction
+            };
             account.Balance -= request.Amount;
 
             database.Transactions.Add(transaction);

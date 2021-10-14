@@ -1,4 +1,5 @@
 ﻿using Abstractions;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Application;
@@ -11,6 +12,8 @@ using PaymentGatewayPublishedLanguage.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using static PaymentGatewayPublishedLanguage.Commands.PurchaseProductCommand;
 
 namespace PaymentGateway
@@ -18,19 +21,47 @@ namespace PaymentGateway
     class Program
     {
         static IConfiguration Configuration;
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Account firstAccount = new Account();
-            firstAccount.Balance = 100;
+            Configuration = new ConfigurationBuilder()
+                 .SetBasePath(Directory.GetCurrentDirectory())
+                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                 .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
+                 .AddEnvironmentVariables()
+                 .Build();
+
+            var services = new ServiceCollection();
+
+            var source = new CancellationTokenSource();
+            var cancellationToken = source.Token;
+
+            services.AddMediatR(typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly);
+
+            services.RegisterBusinessServices(Configuration);
+            //services.AddSingleton<IEventSender, EventSender>();
+            services.AddSingleton(Configuration);
+            // build
+            var serviceProvider = services.BuildServiceProvider();
+            var database = serviceProvider.GetRequiredService<Database>();
+            var mediator = serviceProvider.GetRequiredService<IMediator>();
+
+            var firstAccount = new Account
+            {
+                Balance = 100
+            };
             Console.WriteLine(firstAccount.Balance);
 
-            Person firstPerson = new Person();
-            firstPerson.Name = "Alexandra";
+            var firstPerson = new Person
+            {
+                Name = "Alexandra"
+            };
             Console.WriteLine(firstPerson.Name);
 
-            Product firstService = new Product();
-            firstService.Name = ("Service 1");
-            firstService.Value = 20.5;
+            var firstService = new Product
+            {
+                Name = ("Service 1"),
+                Value = 20.5
+            };
             Console.WriteLine(firstService.Name + " " + firstService.Value);
 
             Console.WriteLine("-----------------------------------");
@@ -46,23 +77,6 @@ namespace PaymentGateway
             //EnrollCustomerOperation enrollCustomerOperation = new EnrollCustomerOperation(eventSender);
             //enrollCustomerOperation.PerformOperation(enrollCustomerCommand);
 
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            // setup
-            var services = new ServiceCollection();
-            services.RegisterBusinessServices(Configuration);
-
-            services.AddSingleton<IEventSender, EventSender>();
-            services.AddSingleton(Configuration);
-
-            // build
-            var serviceProvider = services.BuildServiceProvider();
-
             // use
             var enrollCustomer = new EnrollCustomerCommand
             {
@@ -73,8 +87,8 @@ namespace PaymentGateway
                 Currency = "RON"
             };
 
-            var enrollCustomerOperation = serviceProvider.GetRequiredService<EnrollCustomerOperation>();
-            enrollCustomerOperation.Handle(enrollCustomer, default);
+
+            await mediator.Send(enrollCustomer, cancellationToken);
 
             //Console.WriteLine("\n--------Create account operation-------\n");
             //CreateAccountCommand createAccountCommand = new CreateAccountCommand();
@@ -98,9 +112,8 @@ namespace PaymentGateway
                 Limit = 10000,
                 UniqueIdentifier = "2970304234566"
             };
-            var createAccountOperation = serviceProvider.GetRequiredService<CreateAccountOperation>();
-            createAccountOperation.Handle(createAccountCommand, default);
-            var database = Database.GetInstance();
+
+            await mediator.Send(createAccountCommand, cancellationToken);
 
             //Console.WriteLine("\n--------Deposit money operation-------\n");
             //DepositMoneyCommand depositMoneyCommand = new DepositMoneyCommand();
@@ -123,8 +136,7 @@ namespace PaymentGateway
                 DateOfOperation = DateTime.Now
             };
 
-            var makeDeposit = serviceProvider.GetRequiredService<DepositMoneyOperation>();
-            makeDeposit.Handle(depositMoneyCommand, default);
+            await mediator.Send(depositMoneyCommand, cancellationToken);
 
             //Console.WriteLine("\n--------Withdraw money operation-------\n");
             //WithdrawMoneyCommand withdrawMoneyCommand = new WithdrawMoneyCommand();
@@ -147,8 +159,8 @@ namespace PaymentGateway
                 DateOfOperation = DateTime.Now
             };
 
-            var makeWithdraw = serviceProvider.GetRequiredService<WithdrawMoneyOperation>();
-            makeWithdraw.Handle(withdrawMoneyCommand, default);
+
+            await mediator.Send(withdrawMoneyCommand, cancellationToken);
 
             //Console.WriteLine("\n--------Create product operation-------\n");
             //CreateProductCommand createProductCommand = new CreateProductCommand();
@@ -237,16 +249,14 @@ namespace PaymentGateway
                 ProductDetails = listaProduse
             };
 
-            var purchaseProductOperation = serviceProvider.GetRequiredService<PurchaseProductOperation>();
-            purchaseProductOperation.Handle(purchaseProductCommand, default);
+            await mediator.Send(purchaseProductCommand, cancellationToken);
 
             var query = new ListOfAccounts.Query
             {
                 Cnp = "2970304234566"
             };
 
-            var handler = serviceProvider.GetRequiredService<ListOfAccounts.QueryHandler>();
-            var result = handler.Handle(query, default).GetAwaiter().GetResult();
+            var result = await mediator.Send(query, cancellationToken);
         }
     }
 }

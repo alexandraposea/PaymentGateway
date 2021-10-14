@@ -86,23 +86,27 @@ namespace PaymentGatewayApplication.WriteOperations
                 throw new Exception("You have insufficient funds!");
             }
 
-            Transaction transaction = new Transaction();
-            transaction.Amount = -totalAmount;
+            var transaction = new Transaction
+            {
+                Amount = -totalAmount
+            };
             database.Transactions.Add(transaction);
             account.Balance -= totalAmount;
 
             foreach (var item in request.ProductDetails)
             {
                 product = database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
-                ProductXTransaction productXTransaction = new ProductXTransaction();
-                productXTransaction.TransactionId = transaction.TransactionId;
-                productXTransaction.ProductId = item.ProductId;
-                productXTransaction.Quantity = item.Quantity;
-                productXTransaction.Value = product.Value;
-                productXTransaction.Name = product.Name;
+                var productXTransaction = new ProductXTransaction
+                {
+                    TransactionId = transaction.TransactionId,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    Value = product.Value,
+                    Name = product.Name
+                };
             }
 
-            ProductPurchased eventProductPurchased = new ProductPurchased { ProductDetails = request.ProductDetails };
+            ProductPurchased eventProductPurchased = new() { ProductDetails = request.ProductDetails };
             await _mediator.Publish(eventProductPurchased, cancellationToken);
             database.SaveChanges();
             return Unit.Value;

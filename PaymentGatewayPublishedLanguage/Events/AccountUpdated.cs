@@ -9,9 +9,11 @@ namespace PaymentGatewayPublishedLanguage.Events
         public DateTime Date { get; set; }
         public double Amount { get; set; }
 
-        public AccountUpdated(string IbanCode, DateTime date, double Amount)
+        public AccountUpdated(string ibanCode, DateTime date, double amount)
         {
-
+            IbanCode = ibanCode;
+            Date = date;
+            Amount = amount;
         }
     }
 }

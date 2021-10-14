@@ -5,7 +5,7 @@ namespace PaymentGatewayPublishedLanguage.Commands
 {
     public class PurchaseProductCommand: IRequest
     {
-        public List<PurchaseProductDetail> ProductDetails = new List<PurchaseProductDetail>();
+        public List<PurchaseProductDetail> ProductDetails = new();
         public int? PersonId { get; set; }
         public string UniqueIdentifier { get; set; }
         public int? AccountId { get; set; }

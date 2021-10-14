@@ -21,15 +21,17 @@ namespace PaymentGatewayApplication.WriteOperations
         {
             Database database = Database.GetInstance();
 
-            Product product = new Product();
-            product.ProductId = request.ProductId;
-            product.Name = request.Name;
-            product.Value = request.Value;
-            product.Currency = request.Currency;
-            product.Limit = request.Limit;
+            var product = new Product
+            {
+                ProductId = request.ProductId,
+                Name = request.Name,
+                Value = request.Value,
+                Currency = request.Currency,
+                Limit = request.Limit
+            };
 
             database.Products.Add(product);
-            ProductCreated eventProductCreated = new ProductCreated { Name = request.Name, Currency = request.Currency, Limit = request.Limit, Value = request.Value };
+            ProductCreated eventProductCreated = new() { Name = request.Name, Currency = request.Currency, Limit = request.Limit, Value = request.Value };
             await _mediator.Publish(eventProductCreated, cancellationToken);
             database.SaveChanges();
             return Unit.Value;

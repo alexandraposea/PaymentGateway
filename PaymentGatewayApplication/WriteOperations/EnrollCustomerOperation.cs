@@ -13,7 +13,6 @@ namespace PaymentGatewayApplication.WriteOperations
     public class EnrollCustomerOperation : IRequestHandler<EnrollCustomerCommand>
     {
         private readonly IMediator _mediator;
-        private readonly Database _database;
         public EnrollCustomerOperation(IMediator mediator)
         {
             _mediator = mediator;
@@ -24,9 +23,11 @@ namespace PaymentGatewayApplication.WriteOperations
             var random = new Random();
             var database = Database.GetInstance();
 
-            Person person = new Person();
-            person.Cnp = request.UniqueIdentifier;
-            person.Name = request.Name;
+            var person = new Person
+            {
+                Cnp = request.UniqueIdentifier,
+                Name = request.Name
+            };
             if (request.ClientType == "Company")
             {
                 person.TypeOfPerson = PersonType.Company;
@@ -43,11 +44,13 @@ namespace PaymentGatewayApplication.WriteOperations
 
             database.Persons.Add(person);
 
-            Account account = new Account();
-            account.Type = request.AccountType;
-            account.Currency = request.Currency;
-            account.Balance = 0;
-            account.IbanCode = random.Next(100000).ToString();
+            var account = new Account
+            {
+                Type = request.AccountType,
+                Currency = request.Currency,
+                Balance = 0,
+                IbanCode = random.Next(100000).ToString()
+            };
 
             database.Accounts.Add(account);
 

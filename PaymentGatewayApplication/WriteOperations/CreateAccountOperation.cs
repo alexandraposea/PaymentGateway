@@ -27,7 +27,7 @@ namespace PaymentGatewayApplication.WriteOperations
         public async Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
             Database database = Database.GetInstance();
-            Account account = new Account
+            var account = new Account
             {
                 Balance = _accountOptions.InitialBalance,
                 Currency = request.Currency,
@@ -61,10 +61,5 @@ namespace PaymentGatewayApplication.WriteOperations
             return Unit.Value;
         }
 
-        public void PerformOperation(CreateAccountCommand operation)
-        {
-
-
-        }
     }
 }

@@ -24,7 +24,6 @@ namespace PaymentGateway.WebApi
                 .AddEnvironmentVariables()
                 .Build();
 
-            //Console.WriteLine("Hello World!");
             var services = new ServiceCollection();
             services.AddMediatR(typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly);
             services.RegisterBusinessServices(Configuration);
