@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PaymentGatewayPublishedLanguage.Commands
 {
-    public class PurchaseProductCommand: IRequest
+    public class PurchaseProductCommand : IRequest
     {
         public List<PurchaseProductDetail> ProductDetails = new();
         public int? PersonId { get; set; }

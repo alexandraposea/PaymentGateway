@@ -3,7 +3,7 @@ using System;
 
 namespace PaymentGatewayPublishedLanguage.Events
 {
-    public class AccountUpdated: INotification
+    public class AccountUpdated : INotification
     {
         public string IbanCode { get; set; }
         public DateTime Date { get; set; }

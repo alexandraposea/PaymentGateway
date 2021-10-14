@@ -4,7 +4,7 @@ using static PaymentGatewayPublishedLanguage.Commands.PurchaseProductCommand;
 
 namespace PaymentGatewayPublishedLanguage.Events
 {
-    public class ProductPurchased: INotification
+    public class ProductPurchased : INotification
     {
         public List<PurchaseProductDetail> ProductDetails = new();
     }

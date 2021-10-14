@@ -5,3 +5,4 @@
         bool Validate(TInput input);
     }
 }
+

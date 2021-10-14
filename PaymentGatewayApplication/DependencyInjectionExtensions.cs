@@ -32,7 +32,6 @@ namespace PaymentGateway.Application
                 return options;
             });
 
-
             return services;
         }
     }

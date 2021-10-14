@@ -5,7 +5,7 @@ namespace PaymentGateway.WebApi.Controllers
     // http://localhost:5000/api/Home/GetHello
     [Route("api/[controller]")]
     [ApiController]
-    public class HomeController: ControllerBase
+    public class HomeController : ControllerBase
     {
         [HttpGet]
         [Route("GetHello")]

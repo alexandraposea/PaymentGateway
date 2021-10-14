@@ -4,7 +4,7 @@ using MediatR;
 
 namespace PaymentGatewayPublishedLanguage.Commands
 {
-    public class CreateAccountCommand: IRequest
+    public class CreateAccountCommand : IRequest
     {
         public double Balance { get; set; }
         public string Currency { get; set; }

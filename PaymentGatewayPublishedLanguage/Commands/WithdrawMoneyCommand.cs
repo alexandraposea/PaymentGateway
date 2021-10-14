@@ -3,7 +3,7 @@ using System;
 
 namespace PaymentGatewayPublishedLanguage.Commands
 {
-    public class WithdrawMoneyCommand: IRequest
+    public class WithdrawMoneyCommand : IRequest
     {
         public double Amount { get; set; }
         public string IbanCode { get; set; }

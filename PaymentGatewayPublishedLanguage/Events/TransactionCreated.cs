@@ -3,7 +3,7 @@ using System;
 
 namespace PaymentGatewayPublishedLanguage.Events
 {
-    public class TransactionCreated: INotification
+    public class TransactionCreated : INotification
     {
         public double Amount { get; set; }
         public string Currency { get; set; }

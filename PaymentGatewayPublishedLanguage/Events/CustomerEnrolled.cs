@@ -2,7 +2,7 @@
 
 namespace PaymentGatewayPublishedLanguage.Events
 {
-    public class CustomerEnrolled: INotification
+    public class CustomerEnrolled : INotification
     {
         public string Name { get; set; }
         public string UniqueIdentifier { get; set; }

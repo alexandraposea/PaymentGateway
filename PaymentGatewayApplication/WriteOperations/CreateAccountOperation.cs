@@ -57,9 +57,8 @@ namespace PaymentGatewayApplication.WriteOperations
             AccountCreated eventAccountCreated = new(request.IbanCode, request.Type, request.Status);
 
             await _mediator.Publish(eventAccountCreated, cancellationToken);
-            database.SaveChanges();
+            Database.SaveChanges();
             return Unit.Value;
         }
-
     }
 }

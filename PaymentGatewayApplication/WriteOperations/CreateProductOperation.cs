@@ -33,9 +33,8 @@ namespace PaymentGatewayApplication.WriteOperations
             database.Products.Add(product);
             ProductCreated eventProductCreated = new() { Name = request.Name, Currency = request.Currency, Limit = request.Limit, Value = request.Value };
             await _mediator.Publish(eventProductCreated, cancellationToken);
-            database.SaveChanges();
+            Database.SaveChanges();
             return Unit.Value;
         }
-
     }
 }

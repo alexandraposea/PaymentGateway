@@ -1,6 +1,4 @@
-﻿
-
-namespace PaymentGatewayApplication.Queries
+﻿namespace PaymentGatewayApplication.Queries
 {
     class StatementOfAccounts
     {

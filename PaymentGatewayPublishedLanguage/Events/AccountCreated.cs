@@ -2,7 +2,7 @@
 
 namespace PaymentGatewayPublishedLanguage.Events
 {
-    public class AccountCreated: INotification
+    public class AccountCreated : INotification
     {
         public string IbanCode { get; set; }
         public string Type { get; set; }

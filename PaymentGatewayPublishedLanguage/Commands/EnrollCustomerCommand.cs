@@ -4,7 +4,7 @@ using MediatR;
 
 namespace PaymentGatewayPublishedLanguage.Commands
 {
-    public class EnrollCustomerCommand: IRequest
+    public class EnrollCustomerCommand : IRequest
     {
         public string Name { get; set; }
         public string UniqueIdentifier { get; set; }

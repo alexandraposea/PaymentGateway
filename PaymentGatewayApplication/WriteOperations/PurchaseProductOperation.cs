@@ -108,7 +108,7 @@ namespace PaymentGatewayApplication.WriteOperations
 
             ProductPurchased eventProductPurchased = new() { ProductDetails = request.ProductDetails };
             await _mediator.Publish(eventProductPurchased, cancellationToken);
-            database.SaveChanges();
+            Database.SaveChanges();
             return Unit.Value;
         }
     }

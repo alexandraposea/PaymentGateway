@@ -54,10 +54,9 @@ namespace PaymentGatewayApplication.WriteOperations
 
             database.Accounts.Add(account);
 
-
             CustomerEnrolled eventCustomerEnroll = new(request.Name, request.UniqueIdentifier, request.ClientType);
             await _mediator.Publish(eventCustomerEnroll, cancellationToken);
-            database.SaveChanges();
+            Database.SaveChanges();
             return Unit.Value;
         }
     }
