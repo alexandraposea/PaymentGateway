@@ -29,9 +29,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\PaymentGatewayApplication\PaymentGateway.Application.csproj" />
-		<ProjectReference Include="..\PaymentGatewayExternalService\PaymentGateway.ExternalService.csproj" />
-		<ProjectReference Include="..\PaymentGatewayModels\PaymentGateway.Models.csproj" />
+	  <ProjectReference Include="..\PaymentGatewayApplication\PaymentGateway.Application.csproj" />
+	  <ProjectReference Include="..\PaymentGatewayExternalService\PaymentGateway.ExternalService.csproj" />
+	  <ProjectReference Include="..\PaymentGatewayModels\PaymentGateway.Models.csproj" />
+	  <ProjectReference Include="..\PaymentGatewayPublishedLanguage\PaymentGateway.PublishedLanguage.csproj" />
 	</ItemGroup>
 
 </Project>
