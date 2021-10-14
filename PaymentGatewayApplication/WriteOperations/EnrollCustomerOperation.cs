@@ -2,13 +2,9 @@
 using MediatR;
 using PaymentGatewayData;
 using PaymentGatewayModels;
-using PaymentGatewayPublishedLanguage;
 using PaymentGatewayPublishedLanguage.Commands;
 using PaymentGatewayPublishedLanguage.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

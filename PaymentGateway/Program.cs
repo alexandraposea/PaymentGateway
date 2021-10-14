@@ -2,12 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Application;
-using PaymentGatewayApplication.ReadOperations;
+using PaymentGatewayApplication.Queries;
 using PaymentGatewayApplication.WriteOperations;
 using PaymentGatewayData;
 using PaymentGatewayExternalService;
 using PaymentGatewayModels;
-using PaymentGatewayPublishedLanguage;
 using PaymentGatewayPublishedLanguage.Commands;
 using System;
 using System.Collections.Generic;

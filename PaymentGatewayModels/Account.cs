@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PaymentGatewayModels
+﻿namespace PaymentGatewayModels
 {
     public class Account
     {
