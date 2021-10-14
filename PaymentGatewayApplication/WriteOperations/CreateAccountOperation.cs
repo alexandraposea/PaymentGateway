@@ -15,16 +15,16 @@ namespace PaymentGatewayApplication.WriteOperations
     public class CreateAccountOperation : IRequestHandler<CreateAccountCommand>
 
     {
-        private readonly IEventSender _eventSender;
+        private readonly IMediator _mediator;
         private readonly AccountOptions _accountOptions;
 
-        public CreateAccountOperation(IEventSender eventSender, AccountOptions accountOptions)
+        public CreateAccountOperation(IMediator mediator, AccountOptions accountOptions)
         {
-            _eventSender = eventSender;
+            _mediator = mediator;
             _accountOptions = accountOptions;
         }
 
-        public Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
             Database database = Database.GetInstance();
             Account account = new Account
@@ -56,14 +56,14 @@ namespace PaymentGatewayApplication.WriteOperations
             database.Accounts.Add(account);
             AccountCreated eventAccountCreated = new(request.IbanCode, request.Type, request.Status);
 
-            _eventSender.SendEvent(eventAccountCreated);
+            await _mediator.Publish(eventAccountCreated, cancellationToken);
             database.SaveChanges();
-            return Unit.Task;
+            return Unit.Value;
         }
 
         public void PerformOperation(CreateAccountCommand operation)
         {
-        
+
 
         }
     }

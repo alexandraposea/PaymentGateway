@@ -13,13 +13,13 @@ namespace PaymentGatewayApplication.WriteOperations
 {
     public class DepositMoneyOperation : IRequestHandler<DepositMoneyCommand>
     {
-        public IEventSender eventSender;
-        public DepositMoneyOperation(IEventSender eventSender)
+        private readonly IMediator _mediator;
+        public DepositMoneyOperation(IMediator mediator)
         {
-            this.eventSender = eventSender;
+            _mediator = mediator;
         }
 
-        public Task<Unit> Handle(DepositMoneyCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DepositMoneyCommand request, CancellationToken cancellationToken)
         {
             Database database = Database.GetInstance();
 
@@ -74,10 +74,10 @@ namespace PaymentGatewayApplication.WriteOperations
 
             TransactionCreated eventTransactionCreated = new(request.Amount, request.Currency, request.DateOfTransaction);
             AccountUpdated eventAccountUpdated = new(request.IbanCode, request.DateOfOperation, request.Amount);
-            eventSender.SendEvent(eventTransactionCreated);
-            eventSender.SendEvent(eventAccountUpdated);
+            await _mediator.Publish(eventTransactionCreated, cancellationToken);
+            await _mediator.Publish(eventAccountUpdated, cancellationToken);
             database.SaveChanges();
-            return Unit.Task;
+            return Unit.Value;
         }
 
     }

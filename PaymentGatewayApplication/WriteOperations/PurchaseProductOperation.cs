@@ -7,18 +7,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using System.Threading;
+using PaymentGatewayPublishedLanguage.Events;
 
 namespace PaymentGatewayApplication.WriteOperations
 {
     public class PurchaseProductOperation : IRequestHandler<PurchaseProductCommand>
     {
-        IEventSender eventSender;
-        public PurchaseProductOperation(IEventSender eventSender)
+        private readonly IMediator _mediator;
+        public PurchaseProductOperation(IMediator mediator)
         {
-            this.eventSender = eventSender;
+            _mediator = mediator;
         }
 
-        public Task<Unit> Handle(PurchaseProductCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(PurchaseProductCommand request, CancellationToken cancellationToken)
         {
             Database database = Database.GetInstance();
             Account account;
@@ -101,10 +102,10 @@ namespace PaymentGatewayApplication.WriteOperations
                 productXTransaction.Name = product.Name;
             }
 
-          //  ProductPurchased eventProductPurchased = new ProductPurchased { ProductDetails = request.ProductDetails };
-          //  eventSender.SendEvent(eventProductPurchased);
+            ProductPurchased eventProductPurchased = new ProductPurchased { ProductDetails = request.ProductDetails };
+            await _mediator.Publish(eventProductPurchased, cancellationToken);
             database.SaveChanges();
-            return Unit.Task;
+            return Unit.Value;
         }
     }
 }

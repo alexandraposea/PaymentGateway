@@ -23,7 +23,6 @@ namespace PaymentGateway.WebApi
             services.AddControllers();
             services.AddMvc(o => o.EnableEndpointRouting = false);
 
-            services.AddSingleton<IEventSender, EventSender>();
             services.AddTransient<CreateAccountOperation>();
 
             //services.AddSingleton<AccountOptions>(new AccountOptions { InitialBalance = 200 });

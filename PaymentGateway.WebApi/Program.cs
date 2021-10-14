@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using PaymentGateway.Application;
 using Serilog;
 using System;
 using System.IO;
@@ -20,6 +22,9 @@ namespace PaymentGateway.WebApi
                 .Build();
 
             //Console.WriteLine("Hello World!");
+            var services = new ServiceCollection();
+            services.RegisterBusinessServices(Configuration);
+            services.AddSingleton(Configuration);
 
             try
             {

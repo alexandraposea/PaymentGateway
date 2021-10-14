@@ -1,13 +1,18 @@
 ﻿using Abstractions;
+using MediatR;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PaymentGatewayExternalService
 {
-    public class EventSender : IEventSender
+    public class AllEventsSender : INotificationHandler<INotification>
     {
-        public void SendEvent(object e)
+        public Task Handle(INotification notification, CancellationToken cancellationToken)
         {
-            Console.WriteLine("Event" + e.GetType().FullName);
+            Console.WriteLine(notification);
+            return Task.CompletedTask;
         }
+
     }
 }

@@ -1,9 +1,9 @@
-﻿using System;
+﻿//using System;
 
-namespace Abstractions
-{
-    public interface IEventSender
-    {
-        void SendEvent(Object e);
-    }
-}
+//namespace Abstractions
+//{
+//    public interface IEventSender // INotification
+//    {
+//        void SendEvent(Object e);
+//    }
+//}
