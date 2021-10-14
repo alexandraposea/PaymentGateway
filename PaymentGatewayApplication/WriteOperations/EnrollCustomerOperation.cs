@@ -1,14 +1,13 @@
-﻿using Abstractions;
-using MediatR;
-using PaymentGatewayData;
-using PaymentGatewayModels;
-using PaymentGatewayPublishedLanguage.Commands;
-using PaymentGatewayPublishedLanguage.Events;
+﻿using MediatR;
+using PaymentGateway.Data;
+using PaymentGateway.Models;
+using PaymentGateway.PublishedLanguage.Commands;
+using PaymentGateway.PublishedLanguage.Events;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PaymentGatewayApplication.WriteOperations
+namespace PaymentGateway.Application.WriteOperations
 {
     public class EnrollCustomerOperation : IRequestHandler<EnrollCustomerCommand>
     {
@@ -57,7 +56,7 @@ namespace PaymentGatewayApplication.WriteOperations
 
             CustomerEnrolled eventCustomerEnroll = new(request.Name, request.UniqueIdentifier, request.ClientType);
             await _mediator.Publish(eventCustomerEnroll, cancellationToken);
-            Database.SaveChanges();
+            _database.SaveChanges();
             return Unit.Value;
         }
     }

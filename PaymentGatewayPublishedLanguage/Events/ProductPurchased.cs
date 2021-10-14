@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using System.Collections.Generic;
-using static PaymentGatewayPublishedLanguage.Commands.PurchaseProductCommand;
+using static PaymentGateway.PublishedLanguage.Commands.PurchaseProductCommand;
 
-namespace PaymentGatewayPublishedLanguage.Events
+namespace PaymentGateway.PublishedLanguage.Events
 {
     public class ProductPurchased : INotification
     {

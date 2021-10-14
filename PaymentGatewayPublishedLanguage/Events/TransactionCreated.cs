@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System;
 
-namespace PaymentGatewayPublishedLanguage.Events
+namespace PaymentGateway.PublishedLanguage.Events
 {
     public class TransactionCreated : INotification
     {

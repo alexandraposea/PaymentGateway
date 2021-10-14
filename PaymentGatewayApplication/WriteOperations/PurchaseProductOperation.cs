@@ -1,15 +1,14 @@
-﻿using Abstractions;
-using PaymentGatewayData;
-using PaymentGatewayModels;
-using PaymentGatewayPublishedLanguage.Commands;
+﻿using PaymentGateway.Data;
+using PaymentGateway.Models;
+using PaymentGateway.PublishedLanguage.Commands;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using System.Threading;
-using PaymentGatewayPublishedLanguage.Events;
+using PaymentGateway.PublishedLanguage.Events;
 
-namespace PaymentGatewayApplication.WriteOperations
+namespace PaymentGateway.Application.WriteOperations
 {
     public class PurchaseProductOperation : IRequestHandler<PurchaseProductCommand>
     {
@@ -105,7 +104,7 @@ namespace PaymentGatewayApplication.WriteOperations
 
             ProductPurchased eventProductPurchased = new() { ProductDetails = request.ProductDetails };
             await _mediator.Publish(eventProductPurchased, cancellationToken);
-            Database.SaveChanges();
+            _database.SaveChanges();
             return Unit.Value;
         }
     }

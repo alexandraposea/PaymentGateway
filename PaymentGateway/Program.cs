@@ -1,21 +1,19 @@
-﻿using Abstractions;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Application;
-using PaymentGatewayApplication.Queries;
-using PaymentGatewayApplication.WriteOperations;
-using PaymentGatewayData;
-using PaymentGatewayExternalService;
-using PaymentGatewayModels;
-using PaymentGatewayPublishedLanguage.Commands;
-using PaymentGatewayPublishedLanguage.Events;
+using PaymentGateway.Application.Queries;
+using PaymentGateway.Data;
+using PaymentGateway.ExternalService;
+using PaymentGateway.Models;
+using PaymentGateway.PublishedLanguage.Commands;
+using PaymentGateway.PublishedLanguage.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using static PaymentGatewayPublishedLanguage.Commands.PurchaseProductCommand;
+using static PaymentGateway.PublishedLanguage.Commands.PurchaseProductCommand;
 
 namespace PaymentGateway
 {
@@ -35,6 +33,7 @@ namespace PaymentGateway
 
             var source = new CancellationTokenSource();
             var cancellationToken = source.Token;
+            services.RegisterBusinessServices(Configuration);
 
             services.AddMediatR(typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly);
 

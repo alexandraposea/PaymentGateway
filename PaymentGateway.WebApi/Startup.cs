@@ -6,10 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Application;
 using PaymentGateway.WebApi.Swagger;
-using PaymentGatewayApplication.Queries;
-using PaymentGatewayApplication.WriteOperations;
-using PaymentGatewayExternalService;
-using PaymentGatewayPublishedLanguage.Events;
+using PaymentGateway.Application.Queries;
+using PaymentGateway.ExternalService;
+using PaymentGateway.PublishedLanguage.Events;
 
 namespace PaymentGateway.WebApi
 {
@@ -26,29 +25,16 @@ namespace PaymentGateway.WebApi
             services.AddControllers();
             services.AddMvc(o => o.EnableEndpointRouting = false);
 
-            services.AddTransient<CreateAccountOperation>();
-
             var firstAssembly = typeof(ListOfAccounts).Assembly; // handlere c1..c3
-            //var firstAssembly = typeof(Program).Assembly; // handler generic
             var secondAssembly = typeof(AllEventsHandler).Assembly; // catch all
-                                                                    //var trdasembly = System.Reflection.Assembly.LoadFrom("c:/a.dll");
-                                                                    // services.AddMediatR(firstAssembly, secondAssembly); // get all IRequestHandler and INotificationHandler classes
+                                                                    //var firstAssembly = typeof(Program).Assembly; // handler generic
+
+            //var trdasembly = System.Reflection.Assembly.LoadFrom("c:/a.dll");
+            // services.AddMediatR(firstAssembly, secondAssembly); // get all IRequestHandler and INotificationHandler classes
 
             services.AddMediatR(new[] { firstAssembly, secondAssembly }); // get all IRequestHandler and INotificationHandler classes
             services.AddScopedContravariant<INotificationHandler<INotification>, AllEventsHandler>(typeof(CustomerEnrolled).Assembly);
 
-            //services.AddSingleton<AccountOptions>(new AccountOptions { InitialBalance = 200 });
-            services.AddSingleton<AccountOptions>(sp =>
-            {
-                var config = sp.GetRequiredService<IConfiguration>();
-                var options = new AccountOptions
-                {
-                    InitialBalance = config.GetValue("AccountOptions:InitialBalance", 0)
-                };
-                return options;
-            });
-
-            //services.Configure<AccountOptions>(Configuration.GetSection("AccountOptions"));
             services.RegisterBusinessServices(Configuration);
 
             services.AddSwagger(Configuration["Identity:Authority"]);

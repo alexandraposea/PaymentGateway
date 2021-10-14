@@ -1,16 +1,16 @@
 ﻿using Abstractions;
 using PaymentGateway.Application;
-using PaymentGatewayData;
-using PaymentGatewayModels;
-using PaymentGatewayPublishedLanguage.Events;
-using PaymentGatewayPublishedLanguage.Commands;
+using PaymentGateway.Data;
+using PaymentGateway.Models;
+using PaymentGateway.PublishedLanguage.Events;
+using PaymentGateway.PublishedLanguage.Commands;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using System.Threading;
 
-namespace PaymentGatewayApplication.WriteOperations
+namespace PaymentGateway.Application.WriteOperations
 {
     public class CreateAccountOperation : IRequestHandler<CreateAccountCommand>
 
@@ -57,7 +57,7 @@ namespace PaymentGatewayApplication.WriteOperations
             AccountCreated eventAccountCreated = new(request.IbanCode, request.Type, request.Status);
 
             await _mediator.Publish(eventAccountCreated, cancellationToken);
-            Database.SaveChanges();
+            _database.SaveChanges();
             return Unit.Value;
         }
     }

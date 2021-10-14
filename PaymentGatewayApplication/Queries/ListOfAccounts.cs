@@ -1,13 +1,13 @@
 ﻿using Abstractions;
 using MediatR;
-using PaymentGatewayData;
+using PaymentGateway.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PaymentGatewayApplication.Queries
+namespace PaymentGateway.Application.Queries
 {
     public class ListOfAccounts
     {

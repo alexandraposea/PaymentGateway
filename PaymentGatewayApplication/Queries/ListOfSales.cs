@@ -1,4 +1,4 @@
-﻿namespace PaymentGatewayApplication.Queries
+﻿namespace PaymentGateway.Application.Queries
 {
     class ListOfSales
     {

@@ -1,13 +1,13 @@
 ﻿using Abstractions;
 using MediatR;
-using PaymentGatewayData;
-using PaymentGatewayModels;
-using PaymentGatewayPublishedLanguage.Commands;
-using PaymentGatewayPublishedLanguage.Events;
+using PaymentGateway.Data;
+using PaymentGateway.Models;
+using PaymentGateway.PublishedLanguage.Commands;
+using PaymentGateway.PublishedLanguage.Events;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PaymentGatewayApplication.WriteOperations
+namespace PaymentGateway.Application.WriteOperations
 {
     public class CreateProductOperation : IRequestHandler<CreateProductCommand>
     {
@@ -35,7 +35,7 @@ namespace PaymentGatewayApplication.WriteOperations
             _database.Products.Add(product);
             ProductCreated eventProductCreated = new() { Name = request.Name, Currency = request.Currency, Limit = request.Limit, Value = request.Value };
             await _mediator.Publish(eventProductCreated, cancellationToken);
-            Database.SaveChanges();
+            _database.SaveChanges();
             return Unit.Value;
         }
     }

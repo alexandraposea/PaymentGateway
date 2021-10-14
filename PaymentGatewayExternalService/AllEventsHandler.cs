@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PaymentGatewayExternalService
+namespace PaymentGateway.ExternalService
 {
     public class AllEventsHandler : INotificationHandler<INotification>
     {

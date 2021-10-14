@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PaymentGatewayApplication.Queries;
-using PaymentGatewayApplication.WriteOperations;
-using PaymentGatewayPublishedLanguage.Commands;
+using PaymentGateway.Application.Queries;
+using PaymentGateway.PublishedLanguage.Commands;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +22,6 @@ namespace PaymentGateway.WebApi.Controllers
         [Route("Create")]
         public async Task<string> CreateAccount(CreateAccountCommand command, CancellationToken cancellationToken)
         {
-            //CreateAccount request = new CreateAccount(new EventSender());
             await _mediator.Send(command, cancellationToken);
             return "OK";
         }

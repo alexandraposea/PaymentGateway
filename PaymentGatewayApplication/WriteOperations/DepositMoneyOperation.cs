@@ -1,15 +1,14 @@
-﻿using Abstractions;
-using MediatR;
-using PaymentGatewayData;
-using PaymentGatewayModels;
-using PaymentGatewayPublishedLanguage.Commands;
-using PaymentGatewayPublishedLanguage.Events;
+﻿using MediatR;
+using PaymentGateway.Data;
+using PaymentGateway.Models;
+using PaymentGateway.PublishedLanguage.Commands;
+using PaymentGateway.PublishedLanguage.Events;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PaymentGatewayApplication.WriteOperations
+namespace PaymentGateway.Application.WriteOperations
 {
     public class DepositMoneyOperation : IRequestHandler<DepositMoneyCommand>
     {
@@ -80,7 +79,7 @@ namespace PaymentGatewayApplication.WriteOperations
             AccountUpdated eventAccountUpdated = new(request.IbanCode, request.DateOfOperation, request.Amount);
             await _mediator.Publish(eventTransactionCreated, cancellationToken);
             await _mediator.Publish(eventAccountUpdated, cancellationToken);
-            Database.SaveChanges();
+            _database.SaveChanges();
             return Unit.Value;
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace PaymentGatewayModels
+﻿namespace PaymentGateway.Models
 {
     public class Product
     {

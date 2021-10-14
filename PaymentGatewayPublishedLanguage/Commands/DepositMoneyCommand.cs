@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System;
 
-namespace PaymentGatewayPublishedLanguage.Commands
+namespace PaymentGateway.PublishedLanguage.Commands
 {
     public class DepositMoneyCommand : IRequest
     {

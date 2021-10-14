@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PaymentGatewayModels
+namespace PaymentGateway.Models
 {
     public class Person
     {

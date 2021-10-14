@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace PaymentGatewayPublishedLanguage.Events
+namespace PaymentGateway.PublishedLanguage.Events
 {
     public class AccountCreated : INotification
     {

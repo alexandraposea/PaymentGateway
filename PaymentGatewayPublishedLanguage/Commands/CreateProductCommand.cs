@@ -1,8 +1,6 @@
-﻿
+﻿using MediatR;
 
-using MediatR;
-
-namespace PaymentGatewayPublishedLanguage.Commands
+namespace PaymentGateway.PublishedLanguage.Commands
 {
     public class CreateProductCommand : IRequest
     {

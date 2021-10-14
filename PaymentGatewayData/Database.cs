@@ -1,8 +1,8 @@
-﻿using PaymentGatewayModels;
+﻿using PaymentGateway.Models;
 using System;
 using System.Collections.Generic;
 
-namespace PaymentGatewayData
+namespace PaymentGateway.Data
 {
     public class Database
     {
@@ -12,7 +12,7 @@ namespace PaymentGatewayData
         public List<Account> Accounts = new();
         public List<ProductXTransaction> ProductXTransactions = new();
 
-        public static void SaveChanges()
+        public void SaveChanges()
         {
             Console.WriteLine("Save changes to database");
         }
