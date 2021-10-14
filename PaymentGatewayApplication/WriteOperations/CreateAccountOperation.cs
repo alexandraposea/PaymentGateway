@@ -17,16 +17,16 @@ namespace PaymentGatewayApplication.WriteOperations
     {
         private readonly IMediator _mediator;
         private readonly AccountOptions _accountOptions;
-
-        public CreateAccountOperation(IMediator mediator, AccountOptions accountOptions)
+        private readonly Database _database;
+        public CreateAccountOperation(IMediator mediator, AccountOptions accountOptions, Database database)
         {
             _mediator = mediator;
             _accountOptions = accountOptions;
+            _database = database;
         }
 
         public async Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
-            Database database = Database.GetInstance();
             var account = new Account
             {
                 Balance = _accountOptions.InitialBalance,
@@ -40,11 +40,11 @@ namespace PaymentGatewayApplication.WriteOperations
             Person person;
             if (request.PersonId.HasValue)
             {
-                person = database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
+                person = _database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
             }
             else
             {
-                person = database.Persons?.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
+                person = _database.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
             }
 
             if (person == null)
@@ -53,7 +53,7 @@ namespace PaymentGatewayApplication.WriteOperations
             }
 
             account.PersonId = person.PersonId;
-            database.Accounts.Add(account);
+            _database.Accounts.Add(account);
             AccountCreated eventAccountCreated = new(request.IbanCode, request.Type, request.Status);
 
             await _mediator.Publish(eventAccountCreated, cancellationToken);

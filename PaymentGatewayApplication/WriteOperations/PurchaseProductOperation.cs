@@ -14,33 +14,35 @@ namespace PaymentGatewayApplication.WriteOperations
     public class PurchaseProductOperation : IRequestHandler<PurchaseProductCommand>
     {
         private readonly IMediator _mediator;
-        public PurchaseProductOperation(IMediator mediator)
+        private readonly Database _database;
+
+        public PurchaseProductOperation(IMediator mediator, Database database)
         {
             _mediator = mediator;
+            _database = database;
         }
 
         public async Task<Unit> Handle(PurchaseProductCommand request, CancellationToken cancellationToken)
         {
-            Database database = Database.GetInstance();
             Account account;
             Person person;
 
             if (request.AccountId.HasValue)
             {
-                account = database.Accounts.FirstOrDefault(x => x.AccountId == request.AccountId);
+                account = _database.Accounts.FirstOrDefault(x => x.AccountId == request.AccountId);
             }
             else
             {
-                account = database.Accounts.FirstOrDefault(x => x.IbanCode == request.IbanCode);
+                account = _database.Accounts.FirstOrDefault(x => x.IbanCode == request.IbanCode);
             }
 
             if (request.PersonId.HasValue)
             {
-                person = database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
+                person = _database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
             }
             else
             {
-                person = database.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
+                person = _database.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
             }
 
             if (account == null)
@@ -53,7 +55,7 @@ namespace PaymentGatewayApplication.WriteOperations
                 throw new Exception("Person not found");
             }
 
-            var exists = database.Accounts.Any(x => x.PersonId == person.PersonId && x.AccountId == account.AccountId);
+            var exists = _database.Accounts.Any(x => x.PersonId == person.PersonId && x.AccountId == account.AccountId);
 
             if (!exists)
             {
@@ -62,16 +64,11 @@ namespace PaymentGatewayApplication.WriteOperations
 
             var totalAmount = 0d;
             Product product;
-            // select sum(quantity) as TotalQUantity, productId from input group by productid => listOfTotals
-            // select sum(i.quantity*p.price) from input i inner join product p on productid..
-            //operation.ProductDetails.GroupBy() // Sum() // GroupByJoin
+
             foreach (var item in request.ProductDetails)
             {
-                product = database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
-                // select * from Product where id = item.ProductId
-                // var totalPerProduct = listOfTotals.First(x-> x.productid == productid);
+                product = _database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
 
-                // if(totalPerProduct.TotalQUantity > product.Limit)
                 if (product.Limit < item.Quantity)
                 {
                     throw new Exception("Insufficient stocks!");
@@ -90,12 +87,12 @@ namespace PaymentGatewayApplication.WriteOperations
             {
                 Amount = -totalAmount
             };
-            database.Transactions.Add(transaction);
+            _database.Transactions.Add(transaction);
             account.Balance -= totalAmount;
 
             foreach (var item in request.ProductDetails)
             {
-                product = database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
+                product = _database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
                 var productXTransaction = new ProductXTransaction
                 {
                     TransactionId = transaction.TransactionId,

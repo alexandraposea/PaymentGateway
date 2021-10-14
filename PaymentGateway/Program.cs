@@ -39,6 +39,7 @@ namespace PaymentGateway
 
             services.RegisterBusinessServices(Configuration);
             services.AddSingleton(Configuration);
+
             // build
             var serviceProvider = services.BuildServiceProvider();
             var database = serviceProvider.GetRequiredService<Database>();
@@ -93,7 +94,7 @@ namespace PaymentGateway
 
             await mediator.Send(withdrawMoneyCommand, cancellationToken);
 
-            var produs = new Product
+            var product = new Product
             {
                 ProductId = 1,
                 Limit = 10,
@@ -102,7 +103,7 @@ namespace PaymentGateway
                 Value = 10
             };
 
-            var produs1 = new Product
+            var product1 = new Product
             {
                 ProductId = 2,
                 Limit = 5,
@@ -111,7 +112,7 @@ namespace PaymentGateway
                 Value = 5
             };
 
-            var produs2 = new Product
+            var product2 = new Product
             {
                 ProductId = 3,
                 Limit = 3,
@@ -120,9 +121,9 @@ namespace PaymentGateway
                 Value = 3
             };
 
-            database.Products.Add(produs);
-            database.Products.Add(produs1);
-            database.Products.Add(produs2);
+            database.Products.Add(product);
+            database.Products.Add(product1);
+            database.Products.Add(product2);
 
             var listaProduse = new List<PurchaseProductDetail>();
 

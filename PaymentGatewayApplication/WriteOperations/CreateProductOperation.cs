@@ -12,14 +12,16 @@ namespace PaymentGatewayApplication.WriteOperations
     public class CreateProductOperation : IRequestHandler<CreateProductCommand>
     {
         private readonly IMediator _mediator;
-        public CreateProductOperation(IMediator mediator)
+        private readonly Database _database;
+
+        public CreateProductOperation(IMediator mediator, Database database)
         {
             _mediator = mediator;
+            _database = database;
         }
 
         public async Task<Unit> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            Database database = Database.GetInstance();
 
             var product = new Product
             {
@@ -30,7 +32,7 @@ namespace PaymentGatewayApplication.WriteOperations
                 Limit = request.Limit
             };
 
-            database.Products.Add(product);
+            _database.Products.Add(product);
             ProductCreated eventProductCreated = new() { Name = request.Name, Currency = request.Currency, Limit = request.Limit, Value = request.Value };
             await _mediator.Publish(eventProductCreated, cancellationToken);
             Database.SaveChanges();
