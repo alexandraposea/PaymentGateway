@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore;
+﻿using MediatR;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Application;
+using PaymentGatewayApplication.Queries;
+using PaymentGatewayExternalService;
 using Serilog;
 using System;
 using System.IO;
@@ -23,6 +26,7 @@ namespace PaymentGateway.WebApi
 
             //Console.WriteLine("Hello World!");
             var services = new ServiceCollection();
+            services.AddMediatR(typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly);
             services.RegisterBusinessServices(Configuration);
             services.AddSingleton(Configuration);
 

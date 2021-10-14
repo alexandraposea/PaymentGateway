@@ -1,13 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net5.0</TargetFramework>
+	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="appsettings.json" />
 	</ItemGroup>
-
+	<ItemGroup>
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="$(AutoMapperExtensionsPackageVersion)" />
+		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="$(MediatRPackageVersion)" />
+	</ItemGroup>
 	<ItemGroup>
 		<Content Include="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -25,10 +28,10 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\PaymentGatewayApplication\PaymentGateway.Application.csproj" />
-    <ProjectReference Include="..\PaymentGatewayExternalService\PaymentGateway.ExternalService.csproj" />
-    <ProjectReference Include="..\PaymentGatewayModels\PaymentGateway.Models.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PaymentGatewayApplication\PaymentGateway.Application.csproj" />
+		<ProjectReference Include="..\PaymentGatewayExternalService\PaymentGateway.ExternalService.csproj" />
+		<ProjectReference Include="..\PaymentGatewayModels\PaymentGateway.Models.csproj" />
+	</ItemGroup>
 
 </Project>

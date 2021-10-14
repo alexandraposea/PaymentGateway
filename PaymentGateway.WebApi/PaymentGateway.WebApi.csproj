@@ -6,6 +6,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="$(AutoMapperExtensionsPackageVersion)" />
+		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="$(MediatRPackageVersion)" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
 		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCorePackageVersion)" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="$(SerilogExtensionsLoggingPackageVersion)" />
