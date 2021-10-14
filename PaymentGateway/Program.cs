@@ -9,6 +9,7 @@ using PaymentGatewayData;
 using PaymentGatewayExternalService;
 using PaymentGatewayModels;
 using PaymentGatewayPublishedLanguage.Commands;
+using PaymentGatewayPublishedLanguage.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,7 +38,7 @@ namespace PaymentGateway
 
             services.AddMediatR(typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly);
 
-            services.RegisterBusinessServices(Configuration);
+            services.AddScopedContravariant<INotificationHandler<INotification>, AllEventsHandler>(typeof(CustomerEnrolled).Assembly);
             services.AddSingleton(Configuration);
 
             // build

@@ -9,6 +9,7 @@ using PaymentGateway.WebApi.Swagger;
 using PaymentGatewayApplication.Queries;
 using PaymentGatewayApplication.WriteOperations;
 using PaymentGatewayExternalService;
+using PaymentGatewayPublishedLanguage.Events;
 
 namespace PaymentGateway.WebApi
 {
@@ -30,8 +31,11 @@ namespace PaymentGateway.WebApi
             var firstAssembly = typeof(ListOfAccounts).Assembly; // handlere c1..c3
             //var firstAssembly = typeof(Program).Assembly; // handler generic
             var secondAssembly = typeof(AllEventsHandler).Assembly; // catch all
-            //var trdasembly = System.Reflection.Assembly.LoadFrom("c:/a.dll");
-            services.AddMediatR(firstAssembly, secondAssembly); // get all IRequestHandler and INotificationHandler classes
+                                                                    //var trdasembly = System.Reflection.Assembly.LoadFrom("c:/a.dll");
+                                                                    // services.AddMediatR(firstAssembly, secondAssembly); // get all IRequestHandler and INotificationHandler classes
+
+            services.AddMediatR(new[] { firstAssembly, secondAssembly }); // get all IRequestHandler and INotificationHandler classes
+            services.AddScopedContravariant<INotificationHandler<INotification>, AllEventsHandler>(typeof(CustomerEnrolled).Assembly);
 
             //services.AddSingleton<AccountOptions>(new AccountOptions { InitialBalance = 200 });
             services.AddSingleton<AccountOptions>(sp =>
