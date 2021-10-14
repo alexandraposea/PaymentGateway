@@ -8,11 +8,11 @@ using PaymentGatewayData;
 using PaymentGatewayExternalService;
 using PaymentGatewayModels;
 using PaymentGatewayPublishedLanguage;
-using PaymentGatewayPublishedLanguage.WriteSide;
+using PaymentGatewayPublishedLanguage.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using static PaymentGatewayPublishedLanguage.WriteSide.PurchaseProductCommand;
+using static PaymentGatewayPublishedLanguage.Commands.PurchaseProductCommand;
 
 namespace PaymentGateway
 {
@@ -75,7 +75,7 @@ namespace PaymentGateway
             };
 
             var enrollCustomerOperation = serviceProvider.GetRequiredService<EnrollCustomerOperation>();
-            enrollCustomerOperation.PerformOperation(enrollCustomer);
+            enrollCustomerOperation.Handle(enrollCustomer, default);
 
             //Console.WriteLine("\n--------Create account operation-------\n");
             //CreateAccountCommand createAccountCommand = new CreateAccountCommand();
@@ -100,7 +100,7 @@ namespace PaymentGateway
                 UniqueIdentifier = "2970304234566"
             };
             var createAccountOperation = serviceProvider.GetRequiredService<CreateAccountOperation>();
-            createAccountOperation.PerformOperation(createAccountCommand);
+            createAccountOperation.Handle(createAccountCommand, default);
             var database = Database.GetInstance();
 
             //Console.WriteLine("\n--------Deposit money operation-------\n");
@@ -125,7 +125,7 @@ namespace PaymentGateway
             };
 
             var makeDeposit = serviceProvider.GetRequiredService<DepositMoneyOperation>();
-            makeDeposit.PerformOperation(depositMoneyCommand);
+            makeDeposit.Handle(depositMoneyCommand, default);
 
             //Console.WriteLine("\n--------Withdraw money operation-------\n");
             //WithdrawMoneyCommand withdrawMoneyCommand = new WithdrawMoneyCommand();
@@ -149,7 +149,7 @@ namespace PaymentGateway
             };
 
             var makeWithdraw = serviceProvider.GetRequiredService<WithdrawMoneyOperation>();
-            makeWithdraw.PerformOperation(withdrawMoneyCommand);
+            makeWithdraw.Handle(withdrawMoneyCommand, default);
 
             //Console.WriteLine("\n--------Create product operation-------\n");
             //CreateProductCommand createProductCommand = new CreateProductCommand();
@@ -239,7 +239,7 @@ namespace PaymentGateway
             };
 
             var purchaseProductOperation = serviceProvider.GetRequiredService<PurchaseProductOperation>();
-            purchaseProductOperation.PerformOperation(purchaseProductCommand);
+            purchaseProductOperation.Handle(purchaseProductCommand, default);
 
             var query = new ListOfAccounts.Query
             {
@@ -247,7 +247,7 @@ namespace PaymentGateway
             };
 
             var handler = serviceProvider.GetRequiredService<ListOfAccounts.QueryHandler>();
-            var result = handler.PerformOperation(query);
+            var result = handler.Handle(query, default).GetAwaiter().GetResult();
         }
     }
 }

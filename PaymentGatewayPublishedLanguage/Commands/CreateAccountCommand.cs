@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
-namespace PaymentGatewayPublishedLanguage.WriteSide
+using MediatR;
+
+namespace PaymentGatewayPublishedLanguage.Commands
 {
-    public class CreateAccountCommand
+    public class CreateAccountCommand: IRequest
     {
         public double Balance { get; set; }
         public string Currency { get; set; }

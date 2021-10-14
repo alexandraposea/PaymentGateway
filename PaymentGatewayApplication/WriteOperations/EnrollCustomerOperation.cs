@@ -1,17 +1,20 @@
 ﻿using Abstractions;
+using MediatR;
 using PaymentGatewayData;
 using PaymentGatewayModels;
 using PaymentGatewayPublishedLanguage;
+using PaymentGatewayPublishedLanguage.Commands;
 using PaymentGatewayPublishedLanguage.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PaymentGatewayApplication.WriteOperations
 {
-    public class EnrollCustomerOperation : IWriteOperation<EnrollCustomerCommand>
+    public class EnrollCustomerOperation : IRequestHandler<EnrollCustomerCommand>
     {
         public IEventSender eventSender;
         private readonly Database _database;
@@ -21,17 +24,23 @@ namespace PaymentGatewayApplication.WriteOperations
         }
         public void PerformOperation(EnrollCustomerCommand operation)
         {
+           
+
+        }
+
+        public Task<Unit> Handle(EnrollCustomerCommand request, CancellationToken cancellationToken)
+        {
             var random = new Random();
             var database = Database.GetInstance();
 
             Person person = new Person();
-            person.Cnp = operation.UniqueIdentifier;
-            person.Name = operation.Name;
-            if (operation.ClientType == "Company")
+            person.Cnp = request.UniqueIdentifier;
+            person.Name = request.Name;
+            if (request.ClientType == "Company")
             {
                 person.TypeOfPerson = PersonType.Company;
             }
-            else if (operation.ClientType == "Individual")
+            else if (request.ClientType == "Individual")
             {
                 person.TypeOfPerson = PersonType.Individual;
             }
@@ -44,18 +53,18 @@ namespace PaymentGatewayApplication.WriteOperations
             database.Persons.Add(person);
 
             Account account = new Account();
-            account.Type = operation.AccountType;
-            account.Currency = operation.Currency;
+            account.Type = request.AccountType;
+            account.Currency = request.Currency;
             account.Balance = 0;
             account.IbanCode = random.Next(100000).ToString();
 
             database.Accounts.Add(account);
 
 
-            CustomerEnrolled eventCustomerEnroll = new(operation.Name, operation.UniqueIdentifier, operation.ClientType);
+            CustomerEnrolled eventCustomerEnroll = new(request.Name, request.UniqueIdentifier, request.ClientType);
             eventSender.SendEvent(eventCustomerEnroll);
             database.SaveChanges();
-
+            return Unit.Task;
         }
     }
 }

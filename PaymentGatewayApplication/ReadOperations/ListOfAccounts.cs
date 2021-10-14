@@ -1,9 +1,11 @@
 ﻿using Abstractions;
+using MediatR;
 using PaymentGatewayData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PaymentGatewayApplication.ReadOperations
@@ -28,13 +30,13 @@ namespace PaymentGatewayApplication.ReadOperations
             }
         }
 
-        public class Query
+        public class Query : IRequest<List<Model>>
         {
             public int? PersonId { get; set; }
             public string Cnp { get; set; }
         }
 
-        public class QueryHandler : IReadOperation<Query, List<Model>>
+        public class QueryHandler : IRequestHandler<Query, List<Model>>
         {
             private readonly Database _database;
             private readonly IValidator<Query> _validator;
@@ -44,25 +46,26 @@ namespace PaymentGatewayApplication.ReadOperations
                 _database = database;
                 _validator = validator;
             }
-            public List<Model> PerformOperation(Query query)
+
+            public Task<List<Model>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var isValid = _validator.Validate(query);
+                var isValid = _validator.Validate(request);
 
                 if (!isValid)
                 {
                     throw new Exception("Person not found!");
                 }
 
-                //var person = query.PersonId.HasValue ?
-                //    _database.Persons.FirstOrDefault(x => x.PersonId == query.PersonId) :
-                //    _database.Persons.FirstOrDefault(x => x.Cnp == query.Cnp);
+                var person = request.PersonId.HasValue ?
+                    _database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId) :
+                    _database.Persons.FirstOrDefault(x => x.Cnp == request.Cnp);
 
-                //if (person == null)
-                //{
-                //    throw new Exception("Person not found!");
-                //}
+                if (person == null)
+                {
+                    throw new Exception("Person not found!");
+                }
 
-                var db = _database.Accounts.Where(x => x.PersonId == query.PersonId);
+                var db = _database.Accounts.Where(x => x.PersonId == request.PersonId);
                 var result = db.Select(x => new Model
                 {
                     Balance = x.Balance,
@@ -72,9 +75,9 @@ namespace PaymentGatewayApplication.ReadOperations
                     Status = x.Status,
                     Limit = x.Limit
                 }).ToList();
-                return result;
-
+                return Task.FromResult(result);
             }
+
         }
 
         public class Model

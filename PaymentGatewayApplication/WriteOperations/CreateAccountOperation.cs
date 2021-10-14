@@ -3,16 +3,16 @@ using PaymentGateway.Application;
 using PaymentGatewayData;
 using PaymentGatewayModels;
 using PaymentGatewayPublishedLanguage.Events;
-using PaymentGatewayPublishedLanguage.WriteSide;
+using PaymentGatewayPublishedLanguage.Commands;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using MediatR;
+using System.Threading;
 
 namespace PaymentGatewayApplication.WriteOperations
 {
-    public class CreateAccountOperation : IWriteOperation<CreateAccountCommand>
+    public class CreateAccountOperation : IRequestHandler<CreateAccountCommand>
 
     {
         private readonly IEventSender _eventSender;
@@ -23,27 +23,28 @@ namespace PaymentGatewayApplication.WriteOperations
             _eventSender = eventSender;
             _accountOptions = accountOptions;
         }
-        public void PerformOperation(CreateAccountCommand operation)
+
+        public Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
             Database database = Database.GetInstance();
             Account account = new Account
             {
                 Balance = _accountOptions.InitialBalance,
-                Currency = operation.Currency,
-                IbanCode = operation.IbanCode,
-                Type = operation.Type,
-                Status = operation.Status,
-                Limit = operation.Limit
+                Currency = request.Currency,
+                IbanCode = request.IbanCode,
+                Type = request.Type,
+                Status = request.Status,
+                Limit = request.Limit
             };
 
             Person person;
-            if (operation.PersonId.HasValue)
+            if (request.PersonId.HasValue)
             {
-                person = database.Persons.FirstOrDefault(x => x.PersonId == operation.PersonId);
+                person = database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
             }
             else
             {
-                person = database.Persons?.FirstOrDefault(x => x.Cnp == operation.UniqueIdentifier);
+                person = database.Persons?.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
             }
 
             if (person == null)
@@ -53,10 +54,16 @@ namespace PaymentGatewayApplication.WriteOperations
 
             account.PersonId = person.PersonId;
             database.Accounts.Add(account);
-            AccountCreated eventAccountCreated = new(operation.IbanCode, operation.Type, operation.Status);
-            
+            AccountCreated eventAccountCreated = new(request.IbanCode, request.Type, request.Status);
+
             _eventSender.SendEvent(eventAccountCreated);
             database.SaveChanges();
+            return Unit.Task;
+        }
+
+        public void PerformOperation(CreateAccountCommand operation)
+        {
+        
 
         }
     }

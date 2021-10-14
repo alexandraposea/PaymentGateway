@@ -1,12 +1,13 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaymentGatewayPublishedLanguage.WriteSide
+namespace PaymentGatewayPublishedLanguage.Commands
 {
-    public class WithdrawMoneyCommand
+    public class DepositMoneyCommand: IRequest
     {
         public double Amount { get; set; }
         public string IbanCode { get; set; }

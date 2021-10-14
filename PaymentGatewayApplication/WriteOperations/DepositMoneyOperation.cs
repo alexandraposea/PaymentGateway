@@ -1,46 +1,47 @@
 ﻿using Abstractions;
+using MediatR;
 using PaymentGatewayData;
 using PaymentGatewayModels;
+using PaymentGatewayPublishedLanguage.Commands;
 using PaymentGatewayPublishedLanguage.Events;
-using PaymentGatewayPublishedLanguage.WriteSide;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PaymentGatewayApplication.WriteOperations
 {
-    public class DepositMoneyOperation : IWriteOperation<DepositMoneyCommand>
+    public class DepositMoneyOperation : IRequestHandler<DepositMoneyCommand>
     {
         public IEventSender eventSender;
         public DepositMoneyOperation(IEventSender eventSender)
         {
             this.eventSender = eventSender;
         }
-        public void PerformOperation(DepositMoneyCommand operation)
+
+        public Task<Unit> Handle(DepositMoneyCommand request, CancellationToken cancellationToken)
         {
             Database database = Database.GetInstance();
 
             Account account;
             Person person;
 
-            if (operation.AccountId.HasValue)
+            if (request.AccountId.HasValue)
             {
-                account = database.Accounts.FirstOrDefault(x => x.AccountId == operation.AccountId);
+                account = database.Accounts.FirstOrDefault(x => x.AccountId == request.AccountId);
             }
             else
             {
-                account = database.Accounts.FirstOrDefault(x => x.IbanCode == operation.IbanCode);
+                account = database.Accounts.FirstOrDefault(x => x.IbanCode == request.IbanCode);
             }
 
-            if (operation.PersonId.HasValue)
+            if (request.PersonId.HasValue)
             {
-                person = database.Persons.FirstOrDefault(x => x.PersonId == operation.PersonId);
+                person = database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
             }
             else
             {
-                person = database.Persons.FirstOrDefault(x => x.Cnp == operation.UniqueIdentifier);
+                person = database.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
             }
 
             if (account == null)
@@ -55,27 +56,29 @@ namespace PaymentGatewayApplication.WriteOperations
 
             var exists = database.Accounts.Any(x => x.PersonId == person.PersonId && x.AccountId == account.AccountId);
 
-            if(!exists)
+            if (!exists)
             {
                 throw new Exception("The person is not associated with the account!");
             }
 
-            account.AccountId = operation.AccountId;
-            person.PersonId = operation.PersonId;
+            account.AccountId = request.AccountId;
+            person.PersonId = request.PersonId;
             Transaction transaction = new Transaction();
-            transaction.Amount = operation.Amount;
-            transaction.Currency = operation.Currency;
-            transaction.Date = operation.DateOfTransaction;
+            transaction.Amount = request.Amount;
+            transaction.Currency = request.Currency;
+            transaction.Date = request.DateOfTransaction;
 
-            account.Balance += operation.Amount;
+            account.Balance += request.Amount;
 
             database.Transactions.Add(transaction);
-            
-            TransactionCreated eventTransactionCreated = new(operation.Amount, operation.Currency, operation.DateOfTransaction);
-            AccountUpdated eventAccountUpdated = new(operation.IbanCode, operation.DateOfOperation, operation.Amount);
+
+            TransactionCreated eventTransactionCreated = new(request.Amount, request.Currency, request.DateOfTransaction);
+            AccountUpdated eventAccountUpdated = new(request.IbanCode, request.DateOfOperation, request.Amount);
             eventSender.SendEvent(eventTransactionCreated);
             eventSender.SendEvent(eventAccountUpdated);
             database.SaveChanges();
+            return Unit.Task;
         }
+
     }
 }

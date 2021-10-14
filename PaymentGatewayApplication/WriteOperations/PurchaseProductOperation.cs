@@ -2,44 +2,47 @@
 using PaymentGatewayData;
 using PaymentGatewayModels;
 using PaymentGatewayPublishedLanguage.Events;
-using PaymentGatewayPublishedLanguage.WriteSide;
+using PaymentGatewayPublishedLanguage.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MediatR;
+using System.Threading;
 
 namespace PaymentGatewayApplication.WriteOperations
 {
-    public class PurchaseProductOperation : IWriteOperation<PurchaseProductCommand>
+    public class PurchaseProductOperation : IRequestHandler<PurchaseProductCommand>
     {
         IEventSender eventSender;
         public PurchaseProductOperation(IEventSender eventSender)
         {
             this.eventSender = eventSender;
         }
-        public void PerformOperation(PurchaseProductCommand operation)
+
+        public Task<Unit> Handle(PurchaseProductCommand request, CancellationToken cancellationToken)
         {
             Database database = Database.GetInstance();
             Account account;
             Person person;
 
-            if (operation.AccountId.HasValue)
+            if (request.AccountId.HasValue)
             {
-                account = database.Accounts.FirstOrDefault(x => x.AccountId == operation.AccountId);
+                account = database.Accounts.FirstOrDefault(x => x.AccountId == request.AccountId);
             }
             else
             {
-                account = database.Accounts.FirstOrDefault(x => x.IbanCode == operation.IbanCode);
+                account = database.Accounts.FirstOrDefault(x => x.IbanCode == request.IbanCode);
             }
 
-            if (operation.PersonId.HasValue)
+            if (request.PersonId.HasValue)
             {
-                person = database.Persons.FirstOrDefault(x => x.PersonId == operation.PersonId);
+                person = database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
             }
             else
             {
-                person = database.Persons.FirstOrDefault(x => x.Cnp == operation.UniqueIdentifier);
+                person = database.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
             }
 
             if (account == null)
@@ -64,7 +67,7 @@ namespace PaymentGatewayApplication.WriteOperations
             // select sum(quantity) as TotalQUantity, productId from input group by productid => listOfTotals
             // select sum(i.quantity*p.price) from input i inner join product p on productid..
             //operation.ProductDetails.GroupBy() // Sum() // GroupByJoin
-            foreach (var item in operation.ProductDetails)
+            foreach (var item in request.ProductDetails)
             {
                 product = database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
                 // select * from Product where id = item.ProductId
@@ -90,7 +93,7 @@ namespace PaymentGatewayApplication.WriteOperations
             database.Transactions.Add(transaction);
             account.Balance -= totalAmount;
 
-            foreach (var item in operation.ProductDetails)
+            foreach (var item in request.ProductDetails)
             {
                 product = database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
                 ProductXTransaction productXTransaction = new ProductXTransaction();
@@ -101,9 +104,10 @@ namespace PaymentGatewayApplication.WriteOperations
                 productXTransaction.Name = product.Name;
             }
 
-            ProductPurchased eventProductPurchased = new ProductPurchased { ProductDetails = operation.ProductDetails };
-            eventSender.SendEvent(eventProductPurchased);
+          //  ProductPurchased eventProductPurchased = new ProductPurchased { ProductDetails = request.ProductDetails };
+          //  eventSender.SendEvent(eventProductPurchased);
             database.SaveChanges();
+            return Unit.Task;
         }
     }
 }
