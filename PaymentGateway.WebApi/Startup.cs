@@ -11,6 +11,7 @@ using PaymentGateway.ExternalService;
 using PaymentGateway.PublishedLanguage.Events;
 using FluentValidation;
 using MediatR.Pipeline;
+using PaymentGateway.WebApi.Middleware;
 
 namespace PaymentGateway.WebApi
 {
@@ -34,8 +35,10 @@ namespace PaymentGateway.WebApi
               .WithScopedLifetime());
 
             services.AddMediatR(new[] { typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly }); // get all IRequestHandler and INotificationHandler classes
+
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>));
+            services.AddScoped(typeof(IRequestPreProcessor<>), typeof(ValidationPreProcessor<>));
 
             services.AddScopedContravariant<INotificationHandler<INotification>, AllEventsHandler>(typeof(CustomerEnrolled).Assembly);
 
@@ -49,6 +52,7 @@ namespace PaymentGateway.WebApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
+            app.UseMiddleware<ErrorMiddleware>();
             app.UseCors(cors =>
             {
                 cors
