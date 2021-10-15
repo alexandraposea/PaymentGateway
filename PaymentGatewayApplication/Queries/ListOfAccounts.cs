@@ -12,14 +12,13 @@ namespace PaymentGateway.Application.Queries
     {
         public class Validator : AbstractValidator<Query>
         {
-            public Validator(Database _database)
+            public Validator(Database database)
             {
                 RuleFor(q => q).Must(query =>
                 {
                     var person = query.PersonId.HasValue ?
-                    _database.Persons.FirstOrDefault(x => x.PersonId == query.PersonId) :
-                    _database.Persons.FirstOrDefault(x => x.Cnp == query.Cnp);
-
+                        database.Persons.FirstOrDefault(x => x.PersonId == query.PersonId) :
+                        database.Persons.FirstOrDefault(x => x.Cnp == query.Cnp);
                     return person != null;
                 }).WithMessage("Customer not found");
             }
@@ -27,19 +26,32 @@ namespace PaymentGateway.Application.Queries
 
         public class Validator2 : AbstractValidator<Query>
         {
-            public Validator2(Database _database)
+            public Validator2()
             {
-                RuleFor(q => q).Must(query =>
+                RuleFor(q => q).Must(q =>
                 {
-                    var person = query.PersonId.HasValue ?
-                    _database.Persons.FirstOrDefault(x => x.PersonId == query.PersonId) :
-                    _database.Persons.FirstOrDefault(x => x.Cnp == query.Cnp);
+                    return q.PersonId.HasValue || !string.IsNullOrEmpty(q.Cnp);
+                }).WithMessage("Customer data is invalid");
 
-                    return person != null;
-                }).WithMessage("Customer not found");
+                RuleFor(q => q.Cnp).Must(cnp =>
+                {
+                    if (string.IsNullOrEmpty(cnp))
+                    {
+                        return true;
+                    }
+                    return cnp.Length == 13;
+                }).WithMessage("CNP doesn't have the required length");
+
+                RuleFor(q => q.PersonId).Must(personId =>
+                {
+                    if (!personId.HasValue)
+                    {
+                        return true;
+                    }
+                    return personId.Value > 0;
+                }).WithMessage("Person id must be positive");
             }
         }
-
 
         public class Query : IRequest<List<Model>>
         {
@@ -58,7 +70,6 @@ namespace PaymentGateway.Application.Queries
 
             public Task<List<Model>> Handle(Query request, CancellationToken cancellationToken)
             {
-
                 var person = request.PersonId.HasValue ?
                     _database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId) :
                     _database.Persons.FirstOrDefault(x => x.Cnp == request.Cnp);
