@@ -10,6 +10,7 @@
 	<ItemGroup>
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="$(AutoMapperExtensionsPackageVersion)" />
 		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="$(MediatRPackageVersion)" />
+		<PackageReference Include="Scrutor" Version="$(ScrutorPackageVersion)" />
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="appsettings.json">

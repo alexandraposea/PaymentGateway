@@ -1,26 +1,27 @@
 ﻿using MediatR;
 using PaymentGateway.Data;
 using PaymentGateway.Models;
-using PaymentGateway.PublishedLanguage.Events;
 using PaymentGateway.PublishedLanguage.Commands;
+using PaymentGateway.PublishedLanguage.Events;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace PaymentGateway.Application.WriteOperations
+namespace PaymentGateway.Application.CommandHandlers
 {
-    public class WithdrawMoneyOperation : IRequestHandler<WithdrawMoneyCommand>
+    public class DepositMoneyOperation : IRequestHandler<DepositMoneyCommand>
     {
         private readonly IMediator _mediator;
         private readonly Database _database;
-        public WithdrawMoneyOperation(IMediator mediator, Database database)
+
+        public DepositMoneyOperation(IMediator mediator, Database database)
         {
             _mediator = mediator;
             _database = database;
         }
 
-        public async Task<Unit> Handle(WithdrawMoneyCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DepositMoneyCommand request, CancellationToken cancellationToken)
         {
 
             Account account;
@@ -61,20 +62,16 @@ namespace PaymentGateway.Application.WriteOperations
                 throw new Exception("The person is not associated with the account!");
             }
 
-            if (request.Amount > account.Balance)
-            {
-                throw new Exception("You don't have sufficient funds!");
-            }
-
             account.AccountId = request.AccountId;
             person.PersonId = request.PersonId;
             var transaction = new Transaction
             {
-                Amount = -request.Amount,
+                Amount = request.Amount,
                 Currency = request.Currency,
                 Date = request.DateOfTransaction
             };
-            account.Balance -= request.Amount;
+
+            account.Balance += request.Amount;
 
             _database.Transactions.Add(transaction);
 

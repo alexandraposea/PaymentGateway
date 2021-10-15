@@ -1,5 +1,4 @@
-﻿using Abstractions;
-using PaymentGateway.Application;
+﻿
 using PaymentGateway.Data;
 using PaymentGateway.Models;
 using PaymentGateway.PublishedLanguage.Events;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 using MediatR;
 using System.Threading;
 
-namespace PaymentGateway.Application.WriteOperations
+namespace PaymentGateway.Application.CommandHandlers
 {
     public class CreateAccountOperation : IRequestHandler<CreateAccountCommand>
 

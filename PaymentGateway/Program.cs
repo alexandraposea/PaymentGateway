@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
+using MediatR.Pipeline;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Application;
@@ -35,7 +37,16 @@ namespace PaymentGateway
             var cancellationToken = source.Token;
             services.RegisterBusinessServices(Configuration);
 
+            services.Scan(scan => scan
+               .FromAssemblyOf<ListOfAccounts>()
+               .AddClasses(classes => classes.AssignableTo<IValidator>())
+               .AsImplementedInterfaces()
+               .WithScopedLifetime());
+
             services.AddMediatR(typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly);
+
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>));
 
             services.AddScopedContravariant<INotificationHandler<INotification>, AllEventsHandler>(typeof(CustomerEnrolled).Assembly);
             services.AddSingleton(Configuration);

@@ -8,7 +8,7 @@ using MediatR;
 using System.Threading;
 using PaymentGateway.PublishedLanguage.Events;
 
-namespace PaymentGateway.Application.WriteOperations
+namespace PaymentGateway.Application.CommandHandlers
 {
     public class PurchaseProductOperation : IRequestHandler<PurchaseProductCommand>
     {
@@ -100,7 +100,9 @@ namespace PaymentGateway.Application.WriteOperations
                     Value = product.Value,
                     Name = product.Name
                 };
+                _database.ProductXTransactions.Add(productXTransaction);
             }
+
 
             ProductPurchased eventProductPurchased = new() { ProductDetails = request.ProductDetails };
             await _mediator.Publish(eventProductPurchased, cancellationToken);
