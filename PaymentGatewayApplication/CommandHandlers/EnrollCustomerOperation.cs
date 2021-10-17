@@ -12,11 +12,11 @@ namespace PaymentGateway.Application.CommandHandlers
     public class EnrollCustomerOperation : IRequestHandler<EnrollCustomerCommand>
     {
         private readonly IMediator _mediator;
-        private readonly Database _database;
-        public EnrollCustomerOperation(IMediator mediator, Database database)
+        private readonly PaymentDbContext _dbContext;
+        public EnrollCustomerOperation(IMediator mediator, PaymentDbContext dbContext)
         {
             _mediator = mediator;
-            _database = database;
+            _dbContext = dbContext;
         }
 
         public async Task<Unit> Handle(EnrollCustomerCommand request, CancellationToken cancellationToken)
@@ -42,21 +42,22 @@ namespace PaymentGateway.Application.CommandHandlers
             }
 
 
-            _database.Persons.Add(person);
+            _dbContext.Persons.Add(person);
 
             var account = new Account
             {
                 Type = request.AccountType,
                 Currency = request.Currency,
                 Balance = 0,
-                IbanCode = random.Next(100000).ToString()
+                IbanCode = random.Next(100000).ToString(),
+                Status = "Active"
             };
 
-            _database.Accounts.Add(account);
+            _dbContext.Accounts.Add(account);
 
             CustomerEnrolled eventCustomerEnroll = new(request.Name, request.UniqueIdentifier, request.ClientType);
             await _mediator.Publish(eventCustomerEnroll, cancellationToken);
-            _database.SaveChanges();
+            _dbContext.SaveChanges();
             return Unit.Value;
         }
     }

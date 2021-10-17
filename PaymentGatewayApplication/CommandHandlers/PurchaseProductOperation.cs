@@ -13,12 +13,12 @@ namespace PaymentGateway.Application.CommandHandlers
     public class PurchaseProductOperation : IRequestHandler<PurchaseProductCommand>
     {
         private readonly IMediator _mediator;
-        private readonly Database _database;
+        private readonly PaymentDbContext _dbContext;
 
-        public PurchaseProductOperation(IMediator mediator, Database database)
+        public PurchaseProductOperation(IMediator mediator, PaymentDbContext dbContext)
         {
             _mediator = mediator;
-            _database = database;
+            _dbContext = dbContext;
         }
 
         public async Task<Unit> Handle(PurchaseProductCommand request, CancellationToken cancellationToken)
@@ -28,20 +28,20 @@ namespace PaymentGateway.Application.CommandHandlers
 
             if (request.AccountId.HasValue)
             {
-                account = _database.Accounts.FirstOrDefault(x => x.AccountId == request.AccountId);
+                account = _dbContext.Accounts.FirstOrDefault(x => x.AccountId == request.AccountId);
             }
             else
             {
-                account = _database.Accounts.FirstOrDefault(x => x.IbanCode == request.IbanCode);
+                account = _dbContext.Accounts.FirstOrDefault(x => x.IbanCode == request.IbanCode);
             }
 
             if (request.PersonId.HasValue)
             {
-                person = _database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
+                person = _dbContext.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
             }
             else
             {
-                person = _database.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
+                person = _dbContext.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
             }
 
             if (account == null)
@@ -54,19 +54,19 @@ namespace PaymentGateway.Application.CommandHandlers
                 throw new Exception("Person not found");
             }
 
-            var exists = _database.Accounts.Any(x => x.PersonId == person.PersonId && x.AccountId == account.AccountId);
+            var exists = _dbContext.Accounts.Any(x => x.PersonId == person.PersonId && x.AccountId == account.AccountId);
 
             if (!exists)
             {
                 throw new Exception("The person is not associated with the account!");
             }
 
-            var totalAmount = 0d;
+            var totalAmount = 0.0m;
             Product product;
 
             foreach (var item in request.ProductDetails)
             {
-                product = _database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
+                product = _dbContext.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
 
                 if (product.Limit < item.Quantity)
                 {
@@ -74,7 +74,7 @@ namespace PaymentGateway.Application.CommandHandlers
                 }
                 product.Limit -= item.Quantity;
 
-                totalAmount += item.Quantity * product.Value;
+                totalAmount += (Decimal)item.Quantity * product.Value;
             }
 
             if (account.Balance < totalAmount)
@@ -86,12 +86,12 @@ namespace PaymentGateway.Application.CommandHandlers
             {
                 Amount = -totalAmount
             };
-            _database.Transactions.Add(transaction);
+            _dbContext.Transactions.Add(transaction);
             account.Balance -= totalAmount;
 
             foreach (var item in request.ProductDetails)
             {
-                product = _database.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
+                product = _dbContext.Products.FirstOrDefault(x => x.ProductId == item.ProductId);
                 var productXTransaction = new ProductXTransaction
                 {
                     TransactionId = transaction.TransactionId,
@@ -100,13 +100,13 @@ namespace PaymentGateway.Application.CommandHandlers
                     Value = product.Value,
                     Name = product.Name
                 };
-                _database.ProductXTransactions.Add(productXTransaction);
+                _dbContext.ProductXTransactions.Add(productXTransaction);
             }
 
 
             ProductPurchased eventProductPurchased = new() { ProductDetails = request.ProductDetails };
             await _mediator.Publish(eventProductPurchased, cancellationToken);
-            _database.SaveChanges();
+            _dbContext.SaveChanges();
             return Unit.Value;
         }
     }

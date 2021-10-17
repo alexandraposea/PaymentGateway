@@ -12,12 +12,12 @@ namespace PaymentGateway.Application.CommandHandlers
     public class CreateProductOperation : IRequestHandler<CreateProductCommand>
     {
         private readonly IMediator _mediator;
-        private readonly Database _database;
+        private readonly PaymentDbContext _dbContext;
 
-        public CreateProductOperation(IMediator mediator, Database database)
+        public CreateProductOperation(IMediator mediator, PaymentDbContext dbContext)
         {
             _mediator = mediator;
-            _database = database;
+            _dbContext = dbContext;
         }
 
         public async Task<Unit> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -32,10 +32,10 @@ namespace PaymentGateway.Application.CommandHandlers
                 Limit = request.Limit
             };
 
-            _database.Products.Add(product);
+            _dbContext.Products.Add(product);
             ProductCreated eventProductCreated = new() { Name = request.Name, Currency = request.Currency, Limit = request.Limit, Value = request.Value };
             await _mediator.Publish(eventProductCreated, cancellationToken);
-            _database.SaveChanges();
+            _dbContext.SaveChanges();
             return Unit.Value;
         }
     }

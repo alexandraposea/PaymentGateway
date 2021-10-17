@@ -13,12 +13,12 @@ namespace PaymentGateway.Application.CommandHandlers
     public class DepositMoneyOperation : IRequestHandler<DepositMoneyCommand>
     {
         private readonly IMediator _mediator;
-        private readonly Database _database;
+        private readonly PaymentDbContext _dbContext;
 
-        public DepositMoneyOperation(IMediator mediator, Database database)
+        public DepositMoneyOperation(IMediator mediator, PaymentDbContext dbContext)
         {
             _mediator = mediator;
-            _database = database;
+            _dbContext = dbContext;
         }
 
         public async Task<Unit> Handle(DepositMoneyCommand request, CancellationToken cancellationToken)
@@ -29,20 +29,20 @@ namespace PaymentGateway.Application.CommandHandlers
 
             if (request.AccountId.HasValue)
             {
-                account = _database.Accounts.FirstOrDefault(x => x.AccountId == request.AccountId);
+                account = _dbContext.Accounts.FirstOrDefault(x => x.AccountId == request.AccountId);
             }
             else
             {
-                account = _database.Accounts.FirstOrDefault(x => x.IbanCode == request.IbanCode);
+                account = _dbContext.Accounts.FirstOrDefault(x => x.IbanCode == request.IbanCode);
             }
 
             if (request.PersonId.HasValue)
             {
-                person = _database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
+                person = _dbContext.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
             }
             else
             {
-                person = _database.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
+                person = _dbContext.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
             }
 
             if (account == null)
@@ -55,7 +55,7 @@ namespace PaymentGateway.Application.CommandHandlers
                 throw new Exception("Person not found");
             }
 
-            var exists = _database.Accounts.Any(x => x.PersonId == person.PersonId && x.AccountId == account.AccountId);
+            var exists = _dbContext.Accounts.Any(x => x.PersonId == person.PersonId && x.AccountId == account.AccountId);
 
             if (!exists)
             {
@@ -68,18 +68,19 @@ namespace PaymentGateway.Application.CommandHandlers
             {
                 Amount = request.Amount,
                 Currency = request.Currency,
-                Date = request.DateOfTransaction
+                Date = request.DateOfTransaction,
+                Type = "Deposit"
             };
 
             account.Balance += request.Amount;
 
-            _database.Transactions.Add(transaction);
+            _dbContext.Transactions.Add(transaction);
 
             TransactionCreated eventTransactionCreated = new(request.Amount, request.Currency, request.DateOfTransaction);
             AccountUpdated eventAccountUpdated = new(request.IbanCode, request.DateOfOperation, request.Amount);
             await _mediator.Publish(eventTransactionCreated, cancellationToken);
             await _mediator.Publish(eventAccountUpdated, cancellationToken);
-            _database.SaveChanges();
+            _dbContext.SaveChanges();
             return Unit.Value;
         }
     }

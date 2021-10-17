@@ -12,13 +12,13 @@ namespace PaymentGateway.Application.Queries
     {
         public class Validator : AbstractValidator<Query>
         {
-            public Validator(Database database)
+            public Validator(PaymentDbContext _dbContext)
             {
                 RuleFor(q => q).Must(query =>
                 {
                     var person = query.PersonId.HasValue ?
-                        database.Persons.FirstOrDefault(x => x.PersonId == query.PersonId) :
-                        database.Persons.FirstOrDefault(x => x.Cnp == query.Cnp);
+                        _dbContext.Persons.FirstOrDefault(x => x.PersonId == query.PersonId) :
+                        _dbContext.Persons.FirstOrDefault(x => x.Cnp == query.Cnp);
                     return person != null;
                 }).WithMessage("Customer not found");
             }
@@ -61,20 +61,20 @@ namespace PaymentGateway.Application.Queries
 
         public class QueryHandler : IRequestHandler<Query, List<Model>>
         {
-            private readonly Database _database;
+            private readonly PaymentDbContext _dbContext;
 
-            public QueryHandler(Database database)
+            public QueryHandler(PaymentDbContext dbContext)
             {
-                _database = database;
+                _dbContext = dbContext;
             }
 
             public Task<List<Model>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var person = request.PersonId.HasValue ?
-                    _database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId) :
-                    _database.Persons.FirstOrDefault(x => x.Cnp == request.Cnp);
+                    _dbContext.Persons.FirstOrDefault(x => x.PersonId == request.PersonId) :
+                    _dbContext.Persons.FirstOrDefault(x => x.Cnp == request.Cnp);
 
-                var db = _database.Accounts.Where(x => x.PersonId == request.PersonId);
+                var db = _dbContext.Accounts.Where(x => x.PersonId == request.PersonId);
                 var result = db.Select(x => new Model
                 {
                     Balance = x.Balance,
@@ -91,7 +91,7 @@ namespace PaymentGateway.Application.Queries
         public class Model
         {
             public int? AccountId { get; set; }
-            public double Balance { get; set; }
+            public decimal Balance { get; set; }
             public string Currency { get; set; }
             public string IbanCode { get; set; }
             public string Type { get; set; }

@@ -16,12 +16,12 @@ namespace PaymentGateway.Application.CommandHandlers
     {
         private readonly IMediator _mediator;
         private readonly AccountOptions _accountOptions;
-        private readonly Database _database;
-        public CreateAccountOperation(IMediator mediator, AccountOptions accountOptions, Database database)
+        private readonly PaymentDbContext _dbContext;
+        public CreateAccountOperation(IMediator mediator, AccountOptions accountOptions, PaymentDbContext dbContext)
         {
             _mediator = mediator;
             _accountOptions = accountOptions;
-            _database = database;
+            _dbContext = dbContext;
         }
 
         public async Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
@@ -39,11 +39,11 @@ namespace PaymentGateway.Application.CommandHandlers
             Person person;
             if (request.PersonId.HasValue)
             {
-                person = _database.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
+                person = _dbContext.Persons.FirstOrDefault(x => x.PersonId == request.PersonId);
             }
             else
             {
-                person = _database.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
+                person = _dbContext.Persons.FirstOrDefault(x => x.Cnp == request.UniqueIdentifier);
             }
 
             if (person == null)
@@ -52,11 +52,11 @@ namespace PaymentGateway.Application.CommandHandlers
             }
 
             account.PersonId = person.PersonId;
-            _database.Accounts.Add(account);
+            _dbContext.Accounts.Add(account);
             AccountCreated eventAccountCreated = new(request.IbanCode, request.Type, request.Status);
 
             await _mediator.Publish(eventAccountCreated, cancellationToken);
-            _database.SaveChanges();
+            _dbContext.SaveChanges();
             return Unit.Value;
         }
     }

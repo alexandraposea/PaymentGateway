@@ -11,7 +11,7 @@ namespace PaymentGateway.Application
         public static IServiceCollection RegisterBusinessServices(this IServiceCollection services, IConfiguration configuration)
         {
 
-            services.AddSingleton<Database>();
+            services.AddSingleton<PaymentDbContext>();
 
             services.AddSingleton(sp =>
             {

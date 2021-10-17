@@ -36,6 +36,8 @@ namespace PaymentGateway
             var source = new CancellationTokenSource();
             var cancellationToken = source.Token;
             services.RegisterBusinessServices(Configuration);
+            services.AddPaymentDataAccess(Configuration);
+
 
             services.Scan(scan => scan
                .FromAssemblyOf<ListOfAccounts>()
@@ -56,7 +58,7 @@ namespace PaymentGateway
 
             // build
             var serviceProvider = services.BuildServiceProvider();
-            var database = serviceProvider.GetRequiredService<Database>();
+            var dbContext = serviceProvider.GetRequiredService<PaymentDbContext>();
             var mediator = serviceProvider.GetRequiredService<IMediator>();
 
             // use
@@ -135,9 +137,11 @@ namespace PaymentGateway
                 Value = 3
             };
 
-            database.Products.Add(product);
-            database.Products.Add(product1);
-            database.Products.Add(product2);
+            dbContext.Products.Add(product);
+            dbContext.Products.Add(product1);
+            dbContext.Products.Add(product2);
+
+            dbContext.SaveChanges();
 
             var listaProduse = new List<PurchaseProductDetail>();
 
