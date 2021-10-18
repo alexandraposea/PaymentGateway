@@ -62,10 +62,13 @@ namespace PaymentGateway
             var mediator = serviceProvider.GetRequiredService<IMediator>();
 
             // use
+            var cnp = Guid.NewGuid().ToString().Substring(0, 13);
+            var Iban = Guid.NewGuid().ToString();
+
             var enrollCustomer = new EnrollCustomerCommand
             {
                 Name = "Ion Popescu",
-                UniqueIdentifier = "2870304373758666",
+                UniqueIdentifier = cnp,
                 ClientType = "Company",
                 AccountType = "Economii",
                 Currency = "RON"
@@ -75,13 +78,13 @@ namespace PaymentGateway
 
             var createAccountCommand = new CreateAccountCommand
             {
-                Balance = 23,
+                Balance = 300,
                 Currency = "RON",
-                IbanCode = "23RO54INGB7953235479",
+                IbanCode = Iban,
                 Type = "Economii",
                 Status = "activ",
                 Limit = 10000,
-                UniqueIdentifier = "2970304234563"
+                UniqueIdentifier = cnp
             };
 
             await mediator.Send(createAccountCommand, cancellationToken);
@@ -89,8 +92,8 @@ namespace PaymentGateway
             var depositMoneyCommand = new DepositMoneyCommand
             {
                 Amount = 300,
-                IbanCode = "23RO54INGB7953235479",
-                UniqueIdentifier = "2970304234563",
+                IbanCode = Iban,
+                UniqueIdentifier = cnp,
                 Currency = "RON",
                 DateOfTransaction = DateTime.Now,
                 DateOfOperation = DateTime.Now
@@ -101,8 +104,8 @@ namespace PaymentGateway
             var withdrawMoneyCommand = new WithdrawMoneyCommand
             {
                 Amount = 50,
-                IbanCode = "23RO54INGB7953235479",
-                UniqueIdentifier = "2970304234563",
+                IbanCode = Iban,
+                UniqueIdentifier = cnp,
                 Currency = "RON",
                 DateOfTransaction = DateTime.Now,
                 DateOfOperation = DateTime.Now
@@ -160,8 +163,8 @@ namespace PaymentGateway
 
             var purchaseProductCommand = new PurchaseProductCommand
             {
-                IbanCode = "23RO54INGB7953235479",
-                UniqueIdentifier = "2970304234563",
+                IbanCode = Iban,
+                UniqueIdentifier = cnp,
                 ProductDetails = listaProduse
             };
 
@@ -169,7 +172,7 @@ namespace PaymentGateway
 
             var query = new ListOfAccounts.Query
             {
-                Cnp = "2970304234563"
+                Cnp = cnp
             };
 
             var result = await mediator.Send(query, cancellationToken);

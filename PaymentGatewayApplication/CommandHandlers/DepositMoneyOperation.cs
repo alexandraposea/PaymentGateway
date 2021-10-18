@@ -62,8 +62,6 @@ namespace PaymentGateway.Application.CommandHandlers
                 throw new Exception("The person is not associated with the account!");
             }
 
-            //account.AccountId = request.AccountId;
-            //person.PersonId = request.PersonId;
             var transaction = new Transaction
             {
                 AccountId = account.AccountId,
@@ -76,12 +74,12 @@ namespace PaymentGateway.Application.CommandHandlers
             account.Balance += request.Amount;
 
             _dbContext.Transactions.Add(transaction);
-
+            _dbContext.SaveChanges();
             TransactionCreated eventTransactionCreated = new(request.Amount, request.Currency, request.DateOfTransaction);
             AccountUpdated eventAccountUpdated = new(request.IbanCode, request.DateOfOperation, request.Amount);
             await _mediator.Publish(eventTransactionCreated, cancellationToken);
             await _mediator.Publish(eventAccountUpdated, cancellationToken);
-            _dbContext.SaveChanges();
+           
             return Unit.Value;
         }
     }

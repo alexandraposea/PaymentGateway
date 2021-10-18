@@ -4,6 +4,7 @@ using PaymentGateway.Models;
 using PaymentGateway.PublishedLanguage.Commands;
 using PaymentGateway.PublishedLanguage.Events;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,9 +42,13 @@ namespace PaymentGateway.Application.CommandHandlers
                 throw new Exception("Unsupported person type");
             }
 
+            var exists = _dbContext.Persons.Any(x => x.Cnp == request.UniqueIdentifier);
 
-            _dbContext.Persons.Add(person);
-            _dbContext.SaveChanges();
+            if (!exists)
+            {
+                _dbContext.Persons.Add(person);
+                _dbContext.SaveChanges();
+            }
 
             var account = new Account
             {
@@ -55,11 +60,17 @@ namespace PaymentGateway.Application.CommandHandlers
                 Status = "Active"
             };
 
-            _dbContext.Accounts.Add(account);
+            var existsIban = _dbContext.Accounts.Any(x => x.IbanCode == account.IbanCode);
+
+            if (!existsIban)
+            {
+                _dbContext.Accounts.Add(account);
+                _dbContext.SaveChanges();
+            }
 
             CustomerEnrolled eventCustomerEnroll = new(request.Name, request.UniqueIdentifier, request.ClientType);
             await _mediator.Publish(eventCustomerEnroll, cancellationToken);
-            _dbContext.SaveChanges();
+
             return Unit.Value;
         }
     }
