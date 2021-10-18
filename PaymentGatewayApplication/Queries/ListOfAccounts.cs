@@ -96,7 +96,7 @@ namespace PaymentGateway.Application.Queries
             public string IbanCode { get; set; }
             public string Type { get; set; }
             public string Status { get; set; }
-            public double Limit { get; set; }
+            public decimal Limit { get; set; }
         }
     }
 }

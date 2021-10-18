@@ -66,10 +66,11 @@ namespace PaymentGateway.Application.CommandHandlers
                 throw new Exception("You don't have sufficient funds!");
             }
 
-            account.AccountId = request.AccountId;
-            person.PersonId = request.PersonId;
+            //account.AccountId = request.AccountId;
+            //person.PersonId = request.PersonId;
             var transaction = new Transaction
             {
+                AccountId = account.AccountId,
                 Amount = -request.Amount,
                 Currency = request.Currency,
                 Date = request.DateOfTransaction,

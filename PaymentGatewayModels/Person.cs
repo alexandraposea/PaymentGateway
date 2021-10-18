@@ -1,13 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+
+#nullable disable
 
 namespace PaymentGateway.Models
 {
-    public class Person
+    public partial class Person
     {
-        public int? PersonId { get; set; }
+        public Person()
+        {
+            Accounts = new HashSet<Account>();
+        }
+
+        public int PersonId { get; set; }
         public string Name { get; set; }
         public string Cnp { get; set; }
-        public PersonType TypeOfPerson { get; set; }
-        public List<Account> Accounts { get; set; } = new List<Account>();
+        public int? TypeOfPerson { get; set; }
+
+        public virtual ICollection<Account> Accounts { get; set; }
     }
 }

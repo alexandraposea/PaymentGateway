@@ -65,8 +65,8 @@ namespace PaymentGateway
             var enrollCustomer = new EnrollCustomerCommand
             {
                 Name = "Ion Popescu",
-                UniqueIdentifier = "2970304234566",
-                ClientType = "Individual",
+                UniqueIdentifier = "2870304373758666",
+                ClientType = "Company",
                 AccountType = "Economii",
                 Currency = "RON"
             };
@@ -81,7 +81,7 @@ namespace PaymentGateway
                 Type = "Economii",
                 Status = "activ",
                 Limit = 10000,
-                UniqueIdentifier = "2970304234566"
+                UniqueIdentifier = "2970304234563"
             };
 
             await mediator.Send(createAccountCommand, cancellationToken);
@@ -90,7 +90,7 @@ namespace PaymentGateway
             {
                 Amount = 300,
                 IbanCode = "23RO54INGB7953235479",
-                UniqueIdentifier = "2970304234566",
+                UniqueIdentifier = "2970304234563",
                 Currency = "RON",
                 DateOfTransaction = DateTime.Now,
                 DateOfOperation = DateTime.Now
@@ -102,7 +102,7 @@ namespace PaymentGateway
             {
                 Amount = 50,
                 IbanCode = "23RO54INGB7953235479",
-                UniqueIdentifier = "2970304234566",
+                UniqueIdentifier = "2970304234563",
                 Currency = "RON",
                 DateOfTransaction = DateTime.Now,
                 DateOfOperation = DateTime.Now
@@ -112,7 +112,6 @@ namespace PaymentGateway
 
             var product = new Product
             {
-                ProductId = 1,
                 Limit = 10,
                 Name = "Pantofi",
                 Currency = "Eur",
@@ -121,7 +120,6 @@ namespace PaymentGateway
 
             var product1 = new Product
             {
-                ProductId = 2,
                 Limit = 5,
                 Name = "pantaloni",
                 Currency = "Eur",
@@ -130,7 +128,6 @@ namespace PaymentGateway
 
             var product2 = new Product
             {
-                ProductId = 3,
                 Limit = 3,
                 Name = "Camasa",
                 Currency = "Eur",
@@ -147,7 +144,7 @@ namespace PaymentGateway
 
             var prodCmd1 = new PurchaseProductDetail
             {
-                ProductId = 1,
+                ProductId = product1.ProductId,
                 Quantity = 2
             };
 
@@ -155,7 +152,7 @@ namespace PaymentGateway
 
             var prodCmd2 = new PurchaseProductDetail
             {
-                ProductId = 2,
+                ProductId = product2.ProductId,
                 Quantity = 3
             };
 
@@ -164,7 +161,7 @@ namespace PaymentGateway
             var purchaseProductCommand = new PurchaseProductCommand
             {
                 IbanCode = "23RO54INGB7953235479",
-                UniqueIdentifier = "2970304234566",
+                UniqueIdentifier = "2970304234563",
                 ProductDetails = listaProduse
             };
 
@@ -172,7 +169,7 @@ namespace PaymentGateway
 
             var query = new ListOfAccounts.Query
             {
-                Cnp = "2970304234566"
+                Cnp = "2970304234563"
             };
 
             var result = await mediator.Send(query, cancellationToken);

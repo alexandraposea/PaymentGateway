@@ -84,10 +84,15 @@ namespace PaymentGateway.Application.CommandHandlers
 
             var transaction = new Transaction
             {
-                Amount = -totalAmount
+                AccountId = account.AccountId,
+                Date = DateTime.Now,
+                Amount = -totalAmount,
+                Currency = account.Currency,
+                Type = "Purchase"
             };
             _dbContext.Transactions.Add(transaction);
             account.Balance -= totalAmount;
+            _dbContext.SaveChanges();
 
             foreach (var item in request.ProductDetails)
             {
@@ -95,7 +100,7 @@ namespace PaymentGateway.Application.CommandHandlers
                 var productXTransaction = new ProductXTransaction
                 {
                     TransactionId = transaction.TransactionId,
-                    ProductId = item.ProductId,
+                    ProductId = product.ProductId,
                     Quantity = item.Quantity,
                     Value = product.Value,
                     Name = product.Name

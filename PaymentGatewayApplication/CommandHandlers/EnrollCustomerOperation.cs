@@ -30,11 +30,11 @@ namespace PaymentGateway.Application.CommandHandlers
             };
             if (request.ClientType == "Company")
             {
-                person.TypeOfPerson = PersonType.Company;
+                person.TypeOfPerson = (int)PersonType.Company;
             }
             else if (request.ClientType == "Individual")
             {
-                person.TypeOfPerson = PersonType.Individual;
+                person.TypeOfPerson = (int)PersonType.Individual;
             }
             else
             {
@@ -43,9 +43,11 @@ namespace PaymentGateway.Application.CommandHandlers
 
 
             _dbContext.Persons.Add(person);
+            _dbContext.SaveChanges();
 
             var account = new Account
             {
+                PersonId = person.PersonId,
                 Type = request.AccountType,
                 Currency = request.Currency,
                 Balance = 0,
